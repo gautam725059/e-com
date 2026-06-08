@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "title": "Hooks",
+    "price": 12,
+    "currency": "$",
+    "description": "Durable adhesive and screw-in hooks for organizing coats, bags and kitchenware. Set of 10 with strong load capacity.",
+    "image": "wall-hooks.avif"
+  },
+  {
+    "id": 2,
+    "title": "Claw Clip",
+    "price": 5,
+    "currency": "$",
+    "description": "Stylish claw hair clip in a smooth resin finish — holds hair securely without damage. Available in multiple colors.",
+    "image": "clow-clips.avif"
+  },
+  {
+    "id": 3,
+    "title": "Hair Extensions",
+    "price": 79,
+    "currency": "$",
+    "description": "Premium synthetic hair extensions for instant length and volume. Heat-resistant, easy to style and blend with natural hair.",
+    "image": "hair-extansions.avif"
+  },
+  {
+    "id": 4,
+    "title": "Knife Set",
+    "price": 99,
+    "currency": "$",
+    "description": "Professional 5-piece stainless steel kitchen knife set with ergonomic handles and a magnetic wooden block for safe storage.",
+    "image": "knife-set.avif"
+  },
+  {
+    "id": 5,
+    "title": "Key Ring",
+    "price": 8,
+    "currency": "",
+    "description": "Leather key ring with a sturdy metal clasp — minimalist design to keep your keys organized and easy to carry.",
+    "image": "key-ring.avif"
+  },
+  {
+    "id": 6,
+    "title": "Decoration Kit",
+    "price": 45,
+    "currency": "$",
+    "description": "Curated home decoration kit including cushions, frames and small accents to refresh any room with a coordinated look.",
+    "image": "decoration-kit.jpg"
+  }
+]
