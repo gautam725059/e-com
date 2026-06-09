@@ -15,7 +15,7 @@ export default function Navbar() {
           <Link href="/" className="text-2xl font-extrabold text-green-700">Shanya</Link>
           <div className="hidden lg:flex items-center gap-6 text-gray-700">
             <Link href="/products" className="hover:text-green-600">Products</Link>
-            <Link href="#categories" className="hover:text-green-600">Categories</Link>
+            <Link href="/#TopCategories" className="hover:text-green-600">Top Categories</Link>
             <Link href="#contact" className="hover:text-green-600">Contact</Link>
           </div>
         </div>
@@ -32,7 +32,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           <div className="hidden md:block">
-            <button className="text-gray-700 px-3 py-1 rounded hover:bg-gray-50">Sign in</button>
+            <Link href="/login" className="text-gray-700 px-3 py-1 rounded hover:bg-gray-50">Sign in</Link>
           </div>
 
           <Link href="/cart" className="relative text-gray-700 hover:text-green-700">
@@ -64,7 +64,7 @@ export default function Navbar() {
         <div className="md:hidden border-t border-gray-100 bg-white">
           <div className="px-4 pt-4 pb-6 space-y-3">
             <Link href="/products" className="block text-gray-700" onClick={() => setOpen(false)}>Products</Link>
-            <Link href="#categories" className="block text-gray-700" onClick={() => setOpen(false)}>Categories</Link>
+            <Link href="/#TopCategories" className="block text-gray-700" onClick={() => setOpen(false)}>Top Categories</Link>
             <Link href="#contact" className="block text-gray-700" onClick={() => setOpen(false)}>Contact</Link>
             <div className="pt-2">
               <Link href="/cart" className="block bg-green-600 text-white text-center px-4 py-2 rounded">Cart</Link>

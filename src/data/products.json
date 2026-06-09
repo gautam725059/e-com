@@ -5,7 +5,11 @@
     "price": 12,
     "currency": "$",
     "description": "Durable adhesive and screw-in hooks for organizing coats, bags and kitchenware. Set of 10 with strong load capacity.",
-    "image": "wall-hooks.avif"
+    "image": "wall-hooks.avif",
+    "images": [
+      "wall-hooks.avif",
+      "wall-hooks-2.svg"
+    ]
   },
   {
     "id": 2,
@@ -46,5 +50,35 @@
     "currency": "$",
     "description": "Curated home decoration kit including cushions, frames and small accents to refresh any room with a coordinated look.",
     "image": "decoration-kit.jpg"
+  },
+  {
+    "id": 7,
+    "title": "clow clip",
+    "price": 2,
+    "description": "its a hair clip",
+    "image": "",
+    "images": [
+      "",
+      "Bathroom.avif",
+      "wall-hooks.avif"
+    ]
+  },
+  {
+    "id": 8,
+    "title": "",
+    "price": 0,
+    "description": "",
+    "image": "",
+    "images": [
+      "",
+      "Travel_20_OBGA.AdobeStock_306188356_Travel.jpg"
+    ]
+  },
+  {
+    "id": 9,
+    "title": "example",
+    "price": 34,
+    "description": "good",
+    "image": ""
   }
 ]

@@ -15,11 +15,11 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Promotion />
+      <TopCategories />
       <main className="bg-white">
         <FeaturedProducts />
         <DiscountItems />
         <TrendingProducts />
-        <TopCategories />
         <WhatWeOffer />
         <LatestBlog />
       </main>

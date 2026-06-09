@@ -6,6 +6,7 @@ const imageMap: { [key: string]: string } = {
   'knife-set.avif': '/images/knife-set.avif',
   'key-ring.avif': '/images/key-ring.avif',
   'decoration-kit.jpg': '/images/decoration-kit.jpg',
+  'wall-hooks-2.svg': '/images/wall-hooks-2.svg',
 };
 
 export default imageMap;
