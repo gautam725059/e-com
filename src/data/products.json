@@ -50,35 +50,8 @@
     "currency": "$",
     "description": "Curated home decoration kit including cushions, frames and small accents to refresh any room with a coordinated look.",
     "image": "decoration-kit.jpg"
-  },
-  {
-    "id": 7,
-    "title": "clow clip",
-    "price": 2,
-    "description": "its a hair clip",
-    "image": "",
-    "images": [
-      "",
-      "Bathroom.avif",
-      "wall-hooks.avif"
-    ]
-  },
-  {
-    "id": 8,
-    "title": "",
-    "price": 0,
-    "description": "",
-    "image": "",
-    "images": [
-      "",
-      "Travel_20_OBGA.AdobeStock_306188356_Travel.jpg"
-    ]
-  },
-  {
-    "id": 9,
-    "title": "example",
-    "price": 34,
-    "description": "good",
-    "image": ""
   }
+  
+  
+ 
 ]

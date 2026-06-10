@@ -3,75 +3,172 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
+import SearchBar from "./SearchBar";
+import {
+  Menu,
+  X,
+  ShoppingCart,
+  User,
+} from "lucide-react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const { totalCount } = useCart();
 
   return (
-    <nav className="bg-white shadow sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-6">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="text-2xl font-extrabold text-green-700">Shanya</Link>
-          <div className="hidden lg:flex items-center gap-6 text-gray-700">
-            <Link href="/products" className="hover:text-green-600">Products</Link>
-            <Link href="/#TopCategories" className="hover:text-green-600">Top Categories</Link>
-            <Link href="#contact" className="hover:text-green-600">Contact</Link>
-          </div>
-        </div>
+    <nav className="bg-white shadow-sm sticky top-0 z-50">
 
-        <div className="flex-1 hidden md:flex items-center justify-center px-4">
-          <div className="w-full max-w-xl">
-            <label htmlFor="search" className="sr-only">Search products</label>
-            <div className="flex items-center border rounded-lg overflow-hidden">
-              <input id="search" placeholder="Search products, categories..." className="flex-1 px-4 py-2 outline-none text-sm" />
-              <button className="bg-green-600 text-white px-4 py-2 text-sm">Search</button>
-            </div>
-          </div>
-        </div>
+      {/* Top Header */}
+      <div className="max-w-7xl mx-auto px-4 lg:px-6">
 
-        <div className="flex items-center gap-3">
-          <div className="hidden md:block">
-            <Link href="/login" className="text-gray-700 px-3 py-1 rounded hover:bg-gray-50">Sign in</Link>
-          </div>
+        <div className="h-16 lg:h-20 flex items-center justify-between">
 
-          <Link href="/cart" className="relative text-gray-700 hover:text-green-700">
-            <span className="sr-only">View cart</span>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4" />
-            </svg>
-            <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full px-1">{totalCount}</span>
+          {/* Logo */}
+          <Link
+            href="/"
+            className="text-2xl lg:text-3xl font-black text-green-700"
+          >
+            SHANYA
           </Link>
 
-          <button
-            className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
-            aria-label="Toggle menu"
-            onClick={() => setOpen(v => !v)}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          {/* Desktop Search */}
+          <div className="hidden md:flex flex-1 justify-center px-8">
+            <SearchBar />
+          </div>
+
+          {/* Right Side */}
+          <div className="flex items-center gap-4 lg:gap-6">
+
+            {/* Sign In */}
+            <Link
+              href="/login"
+              className="hidden md:flex items-center gap-2 text-gray-700 hover:text-green-600 transition"
+            >
+              <User size={20} />
+              <span>Sign In</span>
+            </Link>
+
+            {/* Cart */}
+            <Link
+              href="/cart"
+              className="relative text-gray-700 hover:text-green-700 transition"
+            >
+              <ShoppingCart size={24} />
+
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] min-w-[18px] h-[18px] flex items-center justify-center rounded-full">
+                {totalCount}
+              </span>
+            </Link>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setOpen(!open)}
+              className="md:hidden"
+              aria-label="Toggle Menu"
+            >
               {open ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <X size={28} />
               ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <Menu size={28} />
               )}
-            </svg>
-          </button>
+            </button>
+
+          </div>
+        </div>
+
+        {/* Mobile Search */}
+        <div className="md:hidden pb-3">
+          <SearchBar />
+        </div>
+
+      </div>
+
+      {/* Desktop Navigation */}
+      <div className="hidden md:block border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 h-12 flex items-center justify-center gap-10 text-sm font-medium">
+
+          <Link
+            href="/products"
+            className="hover:text-green-600 transition"
+          >
+            Products
+          </Link>
+
+          <Link
+            href="/#TopCategories"
+            className="hover:text-green-600 transition"
+          >
+            Top Categories
+          </Link>
+
+          <Link
+            href="/blogs"
+            className="hover:text-green-600 transition"
+          >
+            Blogs
+          </Link>
+
+          <Link
+            href="/contact"
+            className="hover:text-green-600 transition"
+          >
+            Contact
+          </Link>
+
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile Menu */}
       {open && (
         <div className="md:hidden border-t border-gray-100 bg-white">
-          <div className="px-4 pt-4 pb-6 space-y-3">
-            <Link href="/products" className="block text-gray-700" onClick={() => setOpen(false)}>Products</Link>
-            <Link href="/#TopCategories" className="block text-gray-700" onClick={() => setOpen(false)}>Top Categories</Link>
-            <Link href="#contact" className="block text-gray-700" onClick={() => setOpen(false)}>Contact</Link>
-            <div className="pt-2">
-              <Link href="/cart" className="block bg-green-600 text-white text-center px-4 py-2 rounded">Cart</Link>
-            </div>
+
+          <div className="px-4 py-4 flex flex-col gap-4">
+
+            <Link
+              href="/products"
+              onClick={() => setOpen(false)}
+              className="text-gray-700"
+            >
+              Products
+            </Link>
+
+            <Link
+              href="/#TopCategories"
+              onClick={() => setOpen(false)}
+              className="text-gray-700"
+            >
+              Top Categories
+            </Link>
+
+            <Link
+              href="/blogs"
+              onClick={() => setOpen(false)}
+              className="text-gray-700"
+            >
+              Blogs
+            </Link>
+
+            <Link
+              href="/contact"
+              onClick={() => setOpen(false)}
+              className="text-gray-700"
+            >
+              Contact
+            </Link>
+
+            <Link
+              href="/login"
+              onClick={() => setOpen(false)}
+              className="text-gray-700"
+            >
+              Sign In
+            </Link>
+
           </div>
+
         </div>
       )}
+
     </nav>
   );
 }

@@ -68,7 +68,7 @@ export default function ProductDetailClient({ product, imageMap, products }: any
         </div>
 
         <div className="mt-6 flex gap-3 items-center">
-          <AddToCartButton product={product} qty={qty} />
+        
           <button className="px-4 py-2 border rounded">Buy now</button>
         </div>
 

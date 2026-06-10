@@ -1,22 +1,28 @@
 "use client";
 
+import { FaWhatsapp } from "react-icons/fa";
+
 export default function WhatsAppButton() {
   return (
     <a
       href="https://wa.me/919999999999?text=Hi%20I%20need%20help%20with%20an%20order"
       target="_blank"
-      rel="noreferrer"
-      aria-label="Contact us on WhatsApp"
-      className="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white p-3 rounded-full 
-      shadow-lg flex items-center justify-center"
-      
+      rel="noopener noreferrer"
+      aria-label="Chat on WhatsApp"
+      className="group fixed bottom-6 right-6 z-50 inline-flex h-14 items-center gap-3 rounded-full bg-[#25D366] px-4 pr-5 text-white shadow-[0_12px_30px_rgba(37,211,102,0.35)] ring-1 ring-white/20 transition-all duration-300 hover:-translate-y-1 hover:bg-[#1ebe5d] hover:shadow-[0_16px_38px_rgba(37,211,102,0.45)] focus:outline-none focus:ring-4 focus:ring-[#25D366]/30"
     >
-       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-6 w-6">
-        <path fill="currentColor" d="M20.52 3.48A11.92 11.92 0 0012.06.02C6.01.02 1.06 4.97 1.06 11a11.6 11.6 0 001.62 5.57L0 24l7.77-2.01A11.88 11.88 0 0012.06 22c6.05 0 11-4.95 11-11 0-1.9-.47-3.68-1.54-5.22zM12.06 20.44c-1.46 0-2.9-.38-4.18-1.1l-.3-.18-4.62 1.2 1.24-4.51-.2-.32A8.49 8.49 0 013.56 11c0-4.7 3.83-8.52 8.5-8.52 2.27 0 4.39.88 5.99 2.48a8.44 8.44 0 012.5 5.99c0 4.67-3.82 8.51-8.49 8.51z"/>
-        <path fill="#fff" d="M17.1 14.2c-.2-.1-1.2-.6-1.3-.6-.1-.1-.3-.1-.5.1s-.6.6-.8.8c-.1.2-.3.2-.5.1-.4-.1-1.7-.6-3.2-2-1.2-1.1-2-2.5-2.2-2.8-.2-.4 0-.6.1-.7.1-.1.2-.3.3-.5.1-.2 0-.4 0-.6 0-.2-.5-.5-.8-.7-.2-.1-.5-.2-.8-.3-.3-.1-.6 0-.9 0-.3 0-.7.1-1 .4-.3.3-.9.9-.9 2.1s.9 2.5 1 2.6c.1.1.2.2.4.4.2.2.4.3.6.5.2.1.4.2.6.3.2.1.3.1.5.1.2 0 .4 0 .6-.1.2-.1 1.2-.5 1.4-.6.2-.1.5-.2.6-.1.1 0 .3.1.5.2.2.1 1 .6 2 1.1 1 .5 1.2.4 1.6.3.4-.1 1.2-.5 1.4-1.1.2-.6.2-1 .1-1.2-.1-.1-.2-.2-.4-.3z"/>
-      </svg>
-       <p>chat with us</p>
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/20 transition-colors duration-300 group-hover:bg-white/25">
+        <FaWhatsapp size={24} aria-hidden="true" />
+      </span>
+
+      <span className="flex flex-col leading-none">
+        <span className="text-[11px] font-medium uppercase tracking-wide text-white/80">
+          Need help?
+        </span>
+        <span className="mt-1 whitespace-nowrap text-sm font-semibold">
+          Chat With Us
+        </span>
+      </span>
     </a>
   );
 }

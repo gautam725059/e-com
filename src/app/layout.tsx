@@ -16,20 +16,22 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Shanya",
-  description: "A modern e-commerce store built with Next.js 13, showcasing a curated collection of homeware and lifestyle products. Experience seamless shopping with a sleek design, intuitive navigation, and a focus on quality and style. Discover the perfect pieces to elevate your living space at Shanya.",
+  description:
+    "A modern e-commerce store built with Next.js showcasing premium lifestyle and kitchen products.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-screen flex flex-col">
         <CartProvider>
           {children}
           <WhatsAppButton />

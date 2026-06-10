@@ -8,6 +8,7 @@ import TrendingProducts from "@/components/TrendingProducts";
 import DiscountItems from "@/components/DiscountItems";
 import TopCategories from "@/components/TopCategories";
 import LatestBlog from "@/components/LatestBlog";
+import ContactForm from "@/components/ContactForm";
 
 export default function Home() {
   return (
@@ -23,7 +24,7 @@ export default function Home() {
         <WhatWeOffer />
         <LatestBlog />
       </main>
-
+      <ContactForm/>
       <Footer />
     </>
   );

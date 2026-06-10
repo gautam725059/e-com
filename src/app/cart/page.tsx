@@ -4,6 +4,8 @@ import React from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import imageMap from "@/data/imageMap";
+import products from "@/data/products.json";
+
 
 export default function CartPage() {
   const { items, updateQty, removeItem, clearCart, totalCount, totalPrice } = useCart();
@@ -56,6 +58,37 @@ export default function CartPage() {
           <button className="btn btn-primary" onClick={() => { alert('Checkout is a demo — integrate a payment gateway to complete orders.'); }}>Proceed to checkout</button>
         </div>
       </div>
+      <h2 className="text-2xl font-bold mt-12 mb-6">
+        Recommended Products
+      </h2>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {products.slice(0, 4).map((product) => (
+          <Link
+            key={product.id}
+            href={`/products/${product.id}`}
+            className="border rounded-lg overflow-hidden hover:shadow-lg transition"
+          >
+            <img
+              src={imageMap[product.image] ?? product.image}
+              alt={product.title}
+              className="w-full h-40 object-cover"
+            />
+
+            <div className="p-3">
+              <h3 className="font-medium line-clamp-2">
+                {product.title}
+              </h3>
+
+              <p className="text-green-600 font-semibold mt-2">
+                ₹{product.price}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
     </main>
+
+
   );
 }
