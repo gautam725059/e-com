@@ -54,8 +54,21 @@ export default function CartPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="btn btn-ghost" onClick={() => { clearCart(); }}>Clear cart</button>
-          <button className="btn btn-primary" onClick={() => { alert('Checkout is a demo — integrate a payment gateway to complete orders.'); }}>Proceed to checkout</button>
+          <button
+            className="btn btn-ghost"
+            onClick={() => {
+              clearCart();
+            }}
+          >
+            Clear Cart
+          </button>
+
+          <Link
+            href="/checkout"
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium"
+          >
+            Proceed To Checkout
+          </Link>
         </div>
       </div>
       <h2 className="text-2xl font-bold mt-12 mb-6">
@@ -84,6 +97,7 @@ export default function CartPage() {
                 ₹{product.price}
               </p>
             </div>
+
           </Link>
         ))}
       </div>

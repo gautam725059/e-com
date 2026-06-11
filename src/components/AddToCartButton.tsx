@@ -2,6 +2,7 @@
 
 import { useCart } from "@/context/CartContext";
 import React from "react";
+import toast from "react-hot-toast";
 
 export default function AddToCartButton({ product, qty = 1 }: { product: any; qty?: number }) {
   const { addItem } = useCart();
@@ -9,7 +10,22 @@ export default function AddToCartButton({ product, qty = 1 }: { product: any; qt
   return (
     <button
       className="bg-black text-white px-5 py-3 rounded mr-4"
-      onClick={() => addItem({ id: product.id, title: product.title, price: product.price, currency: product.currency, image: product.image }, qty)}
+      onClick={() => {
+        addItem(
+          {
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            currency: product.currency,
+            image: product.image,
+          },
+          qty
+        );
+
+        toast.success(
+          `${product.title} added to cart`
+        );
+      }}
     >
       Add to cart
     </button>

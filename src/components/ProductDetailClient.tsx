@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCart } from "@/context/CartContext";
 import AddToCartButton from "@/components/AddToCartButton";
 
 export default function ProductDetailClient({ product, imageMap, products }: any) {
@@ -11,13 +13,15 @@ export default function ProductDetailClient({ product, imageMap, products }: any
 
   const originalPrice = Math.round(product.price * 1.25);
   const salePrice = product.price;
+  const router = useRouter();
+  const { addItem } = useCart();
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
       <div className="lg:col-span-7 flex gap-6">
         <div className="hidden md:flex flex-col gap-4 w-20">
           {gallery.map((g: string, i: number) => (
-            <button key={i} onClick={() => setSelected(i)} className={`w-16 h-16 rounded overflow-hidden border ${selected===i? 'ring-2 ring-green-500': 'ring-0'}`}>
+            <button key={i} onClick={() => setSelected(i)} className={`w-16 h-16 rounded overflow-hidden border ${selected === i ? 'ring-2 ring-green-500' : 'ring-0'}`}>
               <img src={imageMap[g] ?? g} alt={`${product.title} ${i}`} className="w-full h-full object-cover" />
             </button>
           ))}
@@ -27,7 +31,7 @@ export default function ProductDetailClient({ product, imageMap, products }: any
           <img src={imageMap[gallery[selected]] ?? gallery[selected]} alt={product.title} className="w-full h-[520px] object-cover rounded-lg shadow" />
           <div className="flex gap-3 mt-3 md:hidden">
             {gallery.map((g: string, i: number) => (
-              <button key={i} onClick={() => setSelected(i)} className={`w-16 h-16 rounded overflow-hidden border ${selected===i? 'ring-2 ring-green-500': 'ring-0'}`}>
+              <button key={i} onClick={() => setSelected(i)} className={`w-16 h-16 rounded overflow-hidden border ${selected === i ? 'ring-2 ring-green-500' : 'ring-0'}`}>
                 <img src={imageMap[g] ?? g} alt={`${product.title} ${i}`} className="w-full h-full object-cover" />
               </button>
             ))}
@@ -68,8 +72,26 @@ export default function ProductDetailClient({ product, imageMap, products }: any
         </div>
 
         <div className="mt-6 flex gap-3 items-center">
-        
-          <button className="px-4 py-2 border rounded">Buy now</button>
+
+          <button
+            onClick={() => {
+              addItem(
+                {
+                  id: product.id,
+                  title: product.title,
+                  price: product.price,
+                  currency: product.currency,
+                  image: product.image,
+                },
+                qty
+              );
+
+              router.push("/cart");
+            }}
+            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
+          >
+            Buy Now
+          </button>
         </div>
 
         <div className="mt-6 flex flex-col gap-2 text-sm text-gray-600">
