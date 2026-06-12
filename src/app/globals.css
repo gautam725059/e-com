@@ -3,11 +3,34 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --brand: #0f9d58; /* green-ish like Nayasa */
-  --brand-dark: #0b7a42;
+  --brand: #13294b; /* navy — from Shanya logo */
+  --brand-dark: #0e1f3a;
+  --accent: #c9a14a; /* gold — from Shanya logo */
+  --accent-dark: #ac8638;
   --muted: #6b7280;
   --card: #ffffff;
-  --surface: #f8faf9;
+  --surface: #f7f8fb;
+}
+
+@theme {
+  /* Shanya brand — navy */
+  --color-navy-50: #eef1f7;
+  --color-navy-100: #d5dcea;
+  --color-navy-200: #aab9d4;
+  --color-navy-300: #7e93bd;
+  --color-navy-400: #4f6aa0;
+  --color-navy-500: #2f4a7e;
+  --color-navy-600: #1e3a66;
+  --color-navy-700: #13294b;
+  --color-navy-800: #0e1f3a;
+  --color-navy-900: #0a1730;
+
+  /* Shanya brand — gold */
+  --color-gold-300: #e2c987;
+  --color-gold-400: #d6b463;
+  --color-gold-500: #c9a14a;
+  --color-gold-600: #ac8638;
+  --color-gold-700: #8a6a2b;
 }
 
 @theme inline {
@@ -50,8 +73,11 @@ html, body {
   padding-right: 1rem;
 }
 
-.btn { display:inline-flex; align-items:center; gap:8px; border-radius:8px; padding:0.5rem 1rem; font-weight:600; }
+.btn { display:inline-flex; align-items:center; gap:8px; border-radius:8px; padding:0.5rem 1rem; font-weight:600; transition: background .2s ease, color .2s ease; }
 .btn-primary { background:var(--brand); color:white; }
+.btn-primary:hover { background:var(--brand-dark); }
+.btn-accent { background:var(--accent); color:var(--brand); }
+.btn-accent:hover { background:var(--accent-dark); color:white; }
 .btn-ghost { background:transparent; border:1px solid #e6e6e6; color:var(--foreground); }
 
 .card { background:var(--card); border-radius:12px; box-shadow:0 6px 18px rgba(15,23,42,0.06); }

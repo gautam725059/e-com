@@ -329,7 +329,7 @@ export default function CheckoutPage() {
           <button
             onClick={placeOrder}
             disabled={loading}
-            className="w-full mt-6 bg-green-600 text-white py-3 rounded-lg"
+            className="w-full mt-6 bg-navy-700 text-white py-3 rounded-lg"
           >
             {paymentMethod === "cod"
               ? "Place COD Order"

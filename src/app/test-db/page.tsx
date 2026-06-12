@@ -23,7 +23,7 @@ export default function TestDB() {
   return (
     <button
       onClick={testInsert}
-      className="bg-green-600 text-white px-4 py-2"
+      className="bg-navy-700 text-white px-4 py-2"
     >
       Test Database
     </button>

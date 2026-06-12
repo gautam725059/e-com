@@ -11,7 +11,7 @@ export default function LatestBlog() {
                 <h4 className="font-semibold">Design Tips {i}</h4>
                 <p className="text-sm muted mt-2">Quick ideas to refresh your living space.</p>
                 <div className="mt-4">
-                  <a href="#" className="text-sm text-green-700 font-medium">Read more</a>
+                  <a href="#" className="text-sm text-navy-700 font-medium">Read more</a>
                 </div>
               </div>
             </article>

@@ -17,15 +17,15 @@ export default function FeaturedProducts() {
           <article key={p.id} className="bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-lg transform hover:-translate-y-1 transition relative">
             <div className="relative">
               <img src={imageMap[p.image] ?? p.image} alt={p.title} className="w-full h-56 sm:h-64 object-cover" />
-              <div className="absolute top-3 left-3 bg-green-700 text-white text-sm px-3 py-1 rounded">₹{p.price}</div>
+              <div className="absolute top-3 left-3 bg-navy-800 text-white text-sm px-3 py-1 rounded">₹{p.price}</div>
             </div>
 
             <div className="p-4">
               <h3 className="font-semibold text-lg text-gray-800">{p.title}</h3>
               <p className="text-gray-500 mt-2 text-sm line-clamp-2">{p.description}</p>
               <div className="mt-4 flex items-center gap-3">
-                <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg" onClick={() => addItem({ id: p.id, title: p.title, price: p.price, currency: p.currency, image: p.image })}>Add to cart</button>
-                <Link href={`/products/${p.id}`} className="text-green-600 font-medium">View details</Link>
+                <button className="bg-navy-700 hover:bg-navy-800 text-white px-4 py-2 rounded-lg" onClick={() => addItem({ id: p.id, title: p.title, price: p.price, currency: p.currency, image: p.image })}>Add to cart</button>
+                <Link href={`/products/${p.id}`} className="text-navy-700 font-medium">View details</Link>
               </div>
             </div>
           </article>

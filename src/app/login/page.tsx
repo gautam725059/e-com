@@ -2,52 +2,97 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+
+  const [mobile, setMobile] = useState("");
+
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // Placeholder: replace with real auth flow
+
+    if (mobile.length !== 10) {
+      alert("Please enter a valid mobile number");
+      return;
+    }
+
+    localStorage.setItem(
+      "userLoggedIn",
+      "true"
+    );
+
+    localStorage.setItem(
+      "userMobile",
+      mobile
+    );
+
+    alert("Login Successful");
+
     router.push("/");
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-      <div className="w-full max-w-md bg-white p-8 rounded shadow">
-        <h1 className="flex text-2xl items-center justify-center font-bold mb-4">Sign in</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full border rounded px-3 py-2"
-            />
-          </div>
+    <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+
+        <h1 className="text-3xl font-bold text-center mb-2">
+          Welcome to Shanya
+        </h1>
+
+        <p className="text-gray-500 text-center mb-8">
+          Login using your mobile number
+        </p>
+
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5"
+        >
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full border rounded px-3 py-2"
-            />
+            <label className="block text-sm font-medium mb-2">
+              Mobile Number
+            </label>
+
+            <div className="flex">
+              <span className="px-4 py-3 bg-gray-100 border border-r-0 rounded-l-lg">
+                +91
+              </span>
+
+              <input
+                type="tel"
+                maxLength={10}
+                required
+                value={mobile}
+                onChange={(e) =>
+                  setMobile(
+                    e.target.value.replace(
+                      /\D/g,
+                      ""
+                    )
+                  )
+                }
+                placeholder="9876543210"
+                className="w-full border rounded-r-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold-500"
+              />
+            </div>
           </div>
 
-          <button className="w-full bg-green-600 text-white py-2 rounded">Sign in</button>
+          <button
+            type="submit"
+            className="w-full bg-navy-700 hover:bg-navy-800 text-white py-3 rounded-lg font-medium"
+          >
+            Continue
+          </button>
+
         </form>
 
-        <p className="text-sm mt-4 flex items-center justify-center gap-1 text-gray-600">
-          Don't have an account? <Link href="/register" className="text-green-600">Register</Link>
+        <p className="text-xs text-center text-gray-400 mt-6">
+          OTP login will be added in the next step.
         </p>
+
       </div>
     </main>
   );

@@ -2,12 +2,12 @@
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-b from-zinc-950 to-black text-white mt-20">
+    <footer className="bg-gradient-to-b from-navy-800 to-navy-900 text-white mt-20">
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
         {/* Brand */}
         <div>
-          <h3 className="text-3xl font-bold">
+          <h3 className="text-3xl font-bold text-gold-500">
             Shanya
           </h3>
 
@@ -21,7 +21,7 @@ export default function Footer() {
               href="https://www.facebook.com/"
               target="_blank"
               rel="noreferrer"
-              className="text-gray-400 hover:text-white transition flex items-center gap-2"
+              className="text-gray-400 hover:text-gold-500 transition flex items-center gap-2"
               aria-label="Facebook"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -33,7 +33,7 @@ export default function Footer() {
               href="https://www.instagram.com/"
               target="_blank"
               rel="noreferrer"
-              className="text-gray-400 hover:text-white transition flex items-center gap-2"
+              className="text-gray-400 hover:text-gold-500 transition flex items-center gap-2"
               aria-label="Instagram"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -45,7 +45,7 @@ export default function Footer() {
               href="https://twitter.com/"
               target="_blank"
               rel="noreferrer"
-              className="text-gray-400 hover:text-white transition flex items-center gap-2"
+              className="text-gray-400 hover:text-gold-500 transition flex items-center gap-2"
               aria-label="Twitter"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -65,7 +65,7 @@ export default function Footer() {
             <li>
               <a
                 href="/products"
-                className="hover:text-white transition"
+                className="hover:text-gold-500 transition"
               >
                 All Products
               </a>
@@ -74,7 +74,7 @@ export default function Footer() {
             <li>
               <a
                 href="#"
-                className="hover:text-white transition"
+                className="hover:text-gold-500 transition"
               >
                 New Arrivals
               </a>
@@ -83,7 +83,7 @@ export default function Footer() {
             <li>
               <a
                 href="#"
-                className="hover:text-white transition"
+                className="hover:text-gold-500 transition"
               >
                 Best Sellers
               </a>
@@ -92,7 +92,7 @@ export default function Footer() {
             <li>
               <a
                 href="#"
-                className="hover:text-white transition"
+                className="hover:text-gold-500 transition"
               >
                 Sale
               </a>
@@ -110,7 +110,7 @@ export default function Footer() {
             <li>
               <a
                 href="#"
-                className="hover:text-white transition"
+                className="hover:text-gold-500 transition"
               >
                 About Us
               </a>
@@ -119,7 +119,7 @@ export default function Footer() {
             <li>
               <a
                 href="#"
-                className="hover:text-white transition"
+                className="hover:text-gold-500 transition"
               >
                 Contact Us
               </a>
@@ -128,7 +128,7 @@ export default function Footer() {
             <li>
               <a
                 href="#"
-                className="hover:text-white transition"
+                className="hover:text-gold-500 transition"
               >
                 Careers
               </a>
@@ -137,7 +137,7 @@ export default function Footer() {
             <li>
               <a
                 href="#"
-                className="hover:text-white transition"
+                className="hover:text-gold-500 transition"
               >
                 Support
               </a>
@@ -162,7 +162,7 @@ export default function Footer() {
             India
           </p>
 
-          <div className="overflow-hidden rounded-xl border border-zinc-800 shadow-lg">
+          <div className="overflow-hidden rounded-xl border border-navy-700 shadow-lg">
             <iframe
               src="https://maps.google.com/maps?q=28.4534743,77.0709891&z=16&output=embed"
               width="100%"
@@ -177,7 +177,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-zinc-800">
+      <div className="border-t border-navy-700">
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
 
           <p>
@@ -187,21 +187,21 @@ export default function Footer() {
           <div className="flex gap-6 mt-3 md:mt-0">
             <a
               href="/privacy-policy"
-              className="hover:text-white transition"
+              className="hover:text-gold-500 transition"
             >
               Privacy Policy
             </a>
 
             <a
               href="/terms"
-              className="hover:text-white transition"
+              className="hover:text-gold-500 transition"
             >
               Terms & Conditions
             </a>
 
             <a
               href="/shipping-policy"
-              className="hover:text-white transition"
+              className="hover:text-gold-500 transition"
             >
               Shipping Policy
             </a>

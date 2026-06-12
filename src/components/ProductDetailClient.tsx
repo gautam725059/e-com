@@ -21,7 +21,7 @@ export default function ProductDetailClient({ product, imageMap, products }: any
       <div className="lg:col-span-7 flex gap-6">
         <div className="hidden md:flex flex-col gap-4 w-20">
           {gallery.map((g: string, i: number) => (
-            <button key={i} onClick={() => setSelected(i)} className={`w-16 h-16 rounded overflow-hidden border ${selected === i ? 'ring-2 ring-green-500' : 'ring-0'}`}>
+            <button key={i} onClick={() => setSelected(i)} className={`w-16 h-16 rounded overflow-hidden border ${selected === i ? 'ring-2 ring-gold-500' : 'ring-0'}`}>
               <img src={imageMap[g] ?? g} alt={`${product.title} ${i}`} className="w-full h-full object-cover" />
             </button>
           ))}
@@ -31,7 +31,7 @@ export default function ProductDetailClient({ product, imageMap, products }: any
           <img src={imageMap[gallery[selected]] ?? gallery[selected]} alt={product.title} className="w-full h-[520px] object-cover rounded-lg shadow" />
           <div className="flex gap-3 mt-3 md:hidden">
             {gallery.map((g: string, i: number) => (
-              <button key={i} onClick={() => setSelected(i)} className={`w-16 h-16 rounded overflow-hidden border ${selected === i ? 'ring-2 ring-green-500' : 'ring-0'}`}>
+              <button key={i} onClick={() => setSelected(i)} className={`w-16 h-16 rounded overflow-hidden border ${selected === i ? 'ring-2 ring-gold-500' : 'ring-0'}`}>
                 <img src={imageMap[g] ?? g} alt={`${product.title} ${i}`} className="w-full h-full object-cover" />
               </button>
             ))}
@@ -46,12 +46,12 @@ export default function ProductDetailClient({ product, imageMap, products }: any
         </div>
 
         <div className="mt-4 flex items-baseline gap-4">
-          <div className="text-3xl font-extrabold text-green-600">₹{salePrice}</div>
+          <div className="text-3xl font-extrabold text-navy-700">₹{salePrice}</div>
           <div className="text-sm text-gray-500 line-through">₹{originalPrice}</div>
           <div className="text-sm text-red-500">18% off</div>
         </div>
 
-        <p className="mt-3 text-sm text-green-600">Inclusive of all taxes</p>
+        <p className="mt-3 text-sm text-navy-700">Inclusive of all taxes</p>
 
         <div className="mt-6">
           <div className="text-sm text-gray-600">Color:</div>
@@ -88,7 +88,7 @@ export default function ProductDetailClient({ product, imageMap, products }: any
 
               router.push("/cart");
             }}
-            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            className="px-6 py-3 bg-navy-700 text-white rounded-lg hover:bg-navy-800"
           >
             Buy Now
           </button>
@@ -109,7 +109,7 @@ export default function ProductDetailClient({ product, imageMap, products }: any
               <img src={imageMap[p.image] ?? p.image} alt={p.title} className="w-full h-32 object-cover" />
               <div className="p-3">
                 <div className="font-medium">{p.title}</div>
-                <div className="text-sm text-green-600">₹{p.price}</div>
+                <div className="text-sm text-navy-700">₹{p.price}</div>
               </div>
             </Link>
           ))}

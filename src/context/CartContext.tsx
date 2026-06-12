@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 type CartItem = {
   id: number;
@@ -51,6 +52,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (found) return prev.map(p => p.id === item.id ? { ...p, quantity: p.quantity + qty } : p);
       return [...prev, { ...item, quantity: qty }];
     });
+    toast.success(`${item.title} added to cart`);
   }
 
   function removeItem(id: number) {

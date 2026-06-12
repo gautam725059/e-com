@@ -21,10 +21,6 @@ export default function AddToCartButton({ product, qty = 1 }: { product: any; qt
           },
           qty
         );
-
-        toast.success(
-          `${product.title} added to cart`
-        );
       }}
     >
       Add to cart

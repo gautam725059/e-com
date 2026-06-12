@@ -21,14 +21,14 @@ export default function ProductsPage({ searchParams }: Props) {
           <article key={p.id} className="bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition">
             <div className="relative">
               <img src={imageMap[p.image] ?? p.image} alt={p.title} className="w-full h-56 object-cover" />
-              <div className="absolute top-3 left-3 bg-green-700 text-white text-sm px-3 py-1 rounded">₹{p.price}</div>
+              <div className="absolute top-3 left-3 bg-navy-800 text-white text-sm px-3 py-1 rounded">₹{p.price}</div>
             </div>
 
             <div className="p-4">
               <h3 className="font-semibold text-lg text-gray-800">{p.title}</h3>
               <p className="text-gray-500 mt-2 text-sm line-clamp-2">{p.description}</p>
               <div className="mt-4 flex items-center gap-3">
-                <Link href={`/products/${p.id}`} className="bg-green-600 text-white px-4 py-2 rounded-lg">View product</Link>
+                <Link href={`/products/${p.id}`} className="bg-navy-700 text-white px-4 py-2 rounded-lg">View product</Link>
               </div>
             </div>
           </article>
