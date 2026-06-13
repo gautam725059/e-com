@@ -1,5 +1,5 @@
 import Link from "next/link";
-import imageMap from "@/data/imageMap";
+import { resolveImg } from "@/data/imageMap";
 
 type Product = {
   id: number;
@@ -17,7 +17,7 @@ export default function ProductCard({ product }: { product: Product }) {
     <article className="group bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition flex flex-col">
       <Link href={`/products/${product.id}`} className="relative block">
         <img
-          src={imageMap[product.image] ?? `/images/${product.image}`}
+          src={resolveImg(product.image)}
           alt={product.title}
           className="w-full h-56 object-cover group-hover:scale-[1.02] transition"
         />

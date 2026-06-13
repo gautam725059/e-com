@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { useRequireLogin } from "@/hooks/useRequireLogin";
-import imageMap from "@/data/imageMap";
+import { resolveImg } from "@/data/imageMap";
 import products from "@/data/products.json";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -57,9 +57,7 @@ export default function CartPage() {
         {/* Cart Items */}
         <div className="space-y-5">
           {items.map((item) => {
-            const imgSrc = item.image
-              ? imageMap[item.image] || `/images/${item.image}`
-              : "/images/key-ring.avif";
+            const imgSrc = item.image ? resolveImg(item.image) : "/images/key-ring.avif";
 
             return (
               <div
@@ -131,7 +129,7 @@ export default function CartPage() {
               className="bg-white rounded-xl shadow overflow-hidden hover:shadow-lg transition"
             >
               <img
-                src={imageMap[product.image] || `/images/${product.image}`}
+                src={resolveImg(product.image)}
                 alt={product.title}
                 className="w-full h-56 md:h-40 object-cover"
               />

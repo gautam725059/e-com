@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import imageMap from "@/data/imageMap";
+import categoriesData from "@/data/categories";
 import Link from "next/link";
 import { 
   LayoutDashboard, 
@@ -47,24 +48,23 @@ const getImgUrl = (img: string) => {
   return imageMap[img] || `/images/${img}`;
 };
 
-// Mock Sales Points for SVG chart
-const SALES_DATA = [
-  { label: "01 May", val: 15000 },
-  { label: "05 May", val: 32000 },
-  { label: "10 May", val: 22000 },
-  { label: "15 May", val: 65000 },
-  { label: "20 May", val: 40000 },
-  { label: "25 May", val: 72000 },
-  { label: "31 May", val: 92000 },
-];
-
-const MOCK_ORDERS = [
-  { id: 1250, customer_name: "Priya Sharma", total_amount: 2499, payment_method: "Razorpay", payment_status: "paid", status: "Delivered", created_at: "30 May 2024" },
-  { id: 1249, customer_name: "Ankit Verma", total_amount: 1799, payment_method: "COD", payment_status: "pending", status: "Processing", created_at: "30 May 2024" },
-  { id: 1248, customer_name: "Neha Singh", total_amount: 3249, payment_method: "Razorpay", payment_status: "paid", status: "Shipped", created_at: "29 May 2024" },
-  { id: 1247, customer_name: "Rohit Kumar", total_amount: 999, payment_method: "COD", payment_status: "pending", status: "Delivered", created_at: "29 May 2024" },
-  { id: 1246, customer_name: "Sneha Patel", total_amount: 1499, payment_method: "Razorpay", payment_status: "cancelled", status: "Cancelled", created_at: "28 May 2024" }
-];
+// Build revenue-per-day for the last 7 days from live orders.
+function buildSalesSeries(orders: any[]): { label: string; val: number }[] {
+  const today = new Date();
+  const days: Date[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    days.push(d);
+  }
+  return days.map((d) => {
+    const key = d.toDateString();
+    const val = orders
+      .filter((o) => o.created_ts && new Date(o.created_ts).toDateString() === key)
+      .reduce((s, o) => s + (o.total_amount || 0), 0);
+    return { label: d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }), val };
+  });
+}
 
 const MOCK_CATEGORIES = [
   { name: "Kitchenware", count: 2, slug: "kitchenware" },
@@ -83,16 +83,6 @@ const MOCK_REVIEWS = [
   { author: "Karan S.", rating: 4, comment: "Holds hair tightly, color is very premium.", product: "Claw Clip" },
   { author: "Pooja M.", rating: 5, comment: "Looks just like real hair. Extremely satisfied.", product: "Hair Extensions" }
 ];
-
-// Hardcoded sold counts to match the high-fidelity screenshot
-const SOLD_COUNTS: { [key: number]: number } = {
-  1: 256, // Hooks
-  2: 189, // Claw Clip
-  3: 156, // Hair Extensions
-  4: 134, // Knife Set
-  5: 112, // Key Ring
-  6: 95   // Decoration Kit
-};
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState("Dashboard");
@@ -114,7 +104,7 @@ export default function AdminPage() {
   const [description, setDescription] = useState("");
   const [stock, setStock] = useState(10);
   const [file, setFile] = useState<File | null>(null);
-  const [category, setCategory] = useState("Lifestyle");
+  const [category, setCategory] = useState(categoriesData[0]?.slug ?? "");
   
   // Edit Product form states
   const [editing, setEditing] = useState({ 
@@ -125,9 +115,11 @@ export default function AdminPage() {
     images: [] as string[] 
   });
 
-  // Orders from Supabase or Fallback
+  // Orders from Supabase (live website data)
   const [orders, setOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+  // Units sold per product id, aggregated from order_items
+  const [soldByProduct, setSoldByProduct] = useState<Record<number, number>>({});
 
   // Fetch products
   useEffect(() => {
@@ -167,28 +159,42 @@ export default function AdminPage() {
           .select("*")
           .order("id", { ascending: false });
         if (error) throw error;
-        if (data && data.length > 0) {
-          // Map DB orders to fit our schema
-          const mapped = data.map((order: any) => ({
+        // Map live website orders to the admin schema
+        const mapped = (data || []).map((order: any) => {
+          const ps = (order.payment_status || "pending").toLowerCase();
+          const status =
+            order.status ||
+            (ps === "paid" ? "Delivered" : ps === "cancelled" ? "Cancelled" : "Processing");
+          return {
             id: order.id,
             customer_name: order.customer_name || "Unknown Customer",
-            total_amount: order.total_amount,
-            payment_method: order.payment_method?.toUpperCase() || "Razorpay",
-            payment_status: order.payment_status || "pending",
-            status: order.payment_status === "paid" ? "Delivered" : "Processing",
+            phone: order.phone || "",
+            email: order.email || "",
+            total_amount: order.total_amount || 0,
+            payment_method: order.payment_method?.toUpperCase() || "COD",
+            payment_status: ps,
+            status,
+            created_ts: order.created_at || null,
             created_at: new Date(order.created_at || Date.now()).toLocaleDateString('en-GB', {
               day: '2-digit', month: 'short', year: 'numeric'
             })
-          }));
-          
-          // Merge with mock orders to maintain high-fidelity baseline
-          setOrders([...mapped, ...MOCK_ORDERS]);
-        } else {
-          setOrders(MOCK_ORDERS);
-        }
+          };
+        });
+        setOrders(mapped);
+
+        // Aggregate units sold per product from order_items
+        const { data: itemsData } = await supabase
+          .from("order_items")
+          .select("product_id, quantity");
+        const sold: Record<number, number> = {};
+        (itemsData || []).forEach((it: any) => {
+          if (it.product_id == null) return;
+          sold[it.product_id] = (sold[it.product_id] || 0) + (it.quantity || 0);
+        });
+        setSoldByProduct(sold);
       } catch (e) {
         console.error("Failed to query Supabase orders:", e);
-        setOrders(MOCK_ORDERS);
+        setOrders([]);
       } finally {
         setLoadingOrders(false);
       }
@@ -245,14 +251,15 @@ export default function AdminPage() {
         imagePath = await handleUpload() || "";
       }
       
-      const fn = imagePath ? imagePath.split('/').pop() : "wall-hooks.avif";
-      const product = { 
-        title, 
-        price: Number(price), 
-        description, 
-        image: fn, 
-        images: [fn],
-        stock: Number(stock)
+      const img = imagePath || "wall-hooks.avif";
+      const product = {
+        title,
+        price: Number(price),
+        description,
+        image: img,
+        images: [img],
+        stock: Number(stock),
+        category
       };
 
       const r = await fetch('/api/products', { 
@@ -286,9 +293,8 @@ export default function AdminPage() {
         stock: Number(editing.stock)
       };
       if (uploaded) {
-        const fn = uploaded.split('/').pop();
-        body.images = [...(editing.images || []), fn];
-        body.image = fn;
+        body.images = [...(editing.images || []), uploaded];
+        body.image = uploaded;
       }
       const r = await fetch('/api/products', { 
         method: 'PATCH', 
@@ -324,6 +330,21 @@ export default function AdminPage() {
     }
   }
 
+  // Delete a product permanently
+  async function handleDeleteProduct(id: number, title?: string) {
+    if (!window.confirm(`Delete "${title || `product #${id}`}" permanently? This removes it from the website too.`)) return;
+    try {
+      const r = await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
+      if (!r.ok) throw new Error('Delete failed');
+      setProducts(prev => prev.filter(p => p.id !== id));
+      if (selectedId === id) setSelectedId(null);
+      setMessage(`Product #${id} deleted`);
+      setTimeout(() => setMessage(''), 3000);
+    } catch (err: any) {
+      setMessage(String(err.message || err));
+    }
+  }
+
   // Login action
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -351,13 +372,27 @@ export default function AdminPage() {
     setMessage('Logged out');
   }
 
-  // Calculate stats dynamically based on database contents
-  const totalDbOrders = orders.length;
-  // Calculate dynamic sales offset from DB (assuming baseline matches ₹2,45,680)
-  const dbSalesTotal = orders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
-  const displayRevenue = 245680 + (dbSalesTotal > 10000 ? dbSalesTotal - 9995 : dbSalesTotal); // Adjust mock baseline
-  const displayOrders = 1248 + (totalDbOrders > 5 ? totalDbOrders - 5 : 0);
+  // Live stats computed entirely from website data (Supabase orders + catalog)
+  const displayOrders = orders.length;
+  const displayRevenue = orders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+  const totalCustomers = new Set(orders.map((o) => o.phone).filter(Boolean)).size;
   const displayProducts = products.length;
+
+  // Order status breakdown for the donut chart
+  const statusCounts = orders.reduce((acc, o) => {
+    const s = o.status || "Processing";
+    acc[s] = (acc[s] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Revenue per day for the last 7 days
+  const salesSeries = buildSalesSeries(orders);
+
+  // Best-selling products by real units sold
+  const topProducts = [...products]
+    .map((p) => ({ ...p, sold: soldByProduct[p.id] || 0 }))
+    .sort((a, b) => b.sold - a.sold)
+    .slice(0, 5);
 
   if (!authorized) {
     return (
@@ -577,10 +612,7 @@ export default function AdminPage() {
                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Orders</span>
                     <h3 className="text-2xl font-black text-gray-900">{displayOrders.toLocaleString()}</h3>
                     <div className="flex items-center gap-1.5 text-xs">
-                      <span className="text-emerald-500 font-bold flex items-center">
-                        <ArrowUpRight size={14} /> 12.5%
-                      </span>
-                      <span className="text-gray-400 font-medium">vs last month</span>
+                      <span className="text-gray-400 font-medium">from website checkout</span>
                     </div>
                   </div>
                   <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
@@ -594,10 +626,7 @@ export default function AdminPage() {
                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Revenue</span>
                     <h3 className="text-2xl font-black text-gray-900">₹{displayRevenue.toLocaleString()}</h3>
                     <div className="flex items-center gap-1.5 text-xs">
-                      <span className="text-emerald-500 font-bold flex items-center">
-                        <ArrowUpRight size={14} /> 14.8%
-                      </span>
-                      <span className="text-gray-400 font-medium">vs last month</span>
+                      <span className="text-gray-400 font-medium">across all orders</span>
                     </div>
                   </div>
                   <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
@@ -609,12 +638,9 @@ export default function AdminPage() {
                 <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm flex items-center justify-between">
                   <div className="space-y-1">
                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Customers</span>
-                    <h3 className="text-2xl font-black text-gray-900">892</h3>
+                    <h3 className="text-2xl font-black text-gray-900">{totalCustomers.toLocaleString()}</h3>
                     <div className="flex items-center gap-1.5 text-xs">
-                      <span className="text-emerald-500 font-bold flex items-center">
-                        <ArrowUpRight size={14} /> 8.4%
-                      </span>
-                      <span className="text-gray-400 font-medium">vs last month</span>
+                      <span className="text-gray-400 font-medium">unique buyers</span>
                     </div>
                   </div>
                   <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center">
@@ -628,10 +654,7 @@ export default function AdminPage() {
                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Products</span>
                     <h3 className="text-2xl font-black text-gray-900">{displayProducts}</h3>
                     <div className="flex items-center gap-1.5 text-xs">
-                      <span className="text-emerald-500 font-bold flex items-center">
-                        <ArrowUpRight size={14} /> 5.3%
-                      </span>
-                      <span className="text-gray-400 font-medium">vs last month</span>
+                      <span className="text-gray-400 font-medium">live in catalog</span>
                     </div>
                   </div>
                   <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center">
@@ -649,15 +672,13 @@ export default function AdminPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-bold text-gray-900">Sales Overview</h4>
-                      <p className="text-xs text-gray-400">May 2026 revenue trends</p>
+                      <p className="text-xs text-gray-400">Revenue, last 7 days</p>
                     </div>
                     <select className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none">
-                      <option>This Month</option>
-                      <option>Last Month</option>
-                      <option>Last 6 Months</option>
+                      <option>Last 7 Days</option>
                     </select>
                   </div>
-                  <SalesChart />
+                  <SalesChart points={salesSeries} />
                 </div>
 
                 {/* Order Status Donut Chart */}
@@ -666,7 +687,7 @@ export default function AdminPage() {
                     <h4 className="font-bold text-gray-900">Order Status</h4>
                     <p className="text-xs text-gray-400">Real-time order statuses</p>
                   </div>
-                  <StatusDonutChart />
+                  <StatusDonutChart counts={statusCounts} total={displayOrders} />
                 </div>
 
               </div>
@@ -702,6 +723,13 @@ export default function AdminPage() {
                         </tr>
                       </thead>
                       <tbody>
+                        {orders.length === 0 && (
+                          <tr>
+                            <td colSpan={6} className="py-8 text-center text-gray-400 font-medium">
+                              {loadingOrders ? "Loading orders…" : "No orders yet. They’ll appear here as customers check out."}
+                            </td>
+                          </tr>
+                        )}
                         {orders.slice(0, 5).map((order) => (
                           <tr key={order.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition">
                             <td className="py-3 px-2 font-bold text-gray-900">#ORD-{order.id}</td>
@@ -742,23 +770,20 @@ export default function AdminPage() {
                   </div>
 
                   <div className="divide-y divide-gray-50">
-                    {products.slice(0, 5).map((p) => {
-                      const salesCount = SOLD_COUNTS[p.id] || (95 - p.id * 10);
-                      return (
-                        <div key={p.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 flex-shrink-0">
-                              <img src={getImgUrl(p.image)} alt={p.title} className="w-full h-full object-cover" />
-                            </div>
-                            <div>
-                              <h5 className="text-xs font-bold text-gray-800 line-clamp-1">{p.title}</h5>
-                              <p className="text-[10px] text-gray-400">₹{p.price}</p>
-                            </div>
+                    {topProducts.map((p) => (
+                      <div key={p.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 flex-shrink-0">
+                            <img src={getImgUrl(p.image)} alt={p.title} className="w-full h-full object-cover" />
                           </div>
-                          <span className="text-xs font-bold text-gray-600">{salesCount} Sold</span>
+                          <div>
+                            <h5 className="text-xs font-bold text-gray-800 line-clamp-1">{p.title}</h5>
+                            <p className="text-[10px] text-gray-400">₹{p.price}</p>
+                          </div>
                         </div>
-                      );
-                    })}
+                        <span className="text-xs font-bold text-gray-600">{p.sold} Sold</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -793,6 +818,13 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody>
+                    {orders.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="py-10 text-center text-gray-400 font-medium">
+                          {loadingOrders ? "Loading orders…" : "No orders found in the database yet."}
+                        </td>
+                      </tr>
+                    )}
                     {orders.map((order) => (
                       <tr key={order.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition">
                         <td className="py-4 px-4 font-bold text-gray-900">#ORD-{order.id}</td>
@@ -945,14 +977,14 @@ export default function AdminPage() {
 
                       <div>
                         <label className="block text-gray-500 font-bold mb-1">Category</label>
-                        <select 
-                          value={category} 
+                        <select
+                          value={category}
                           onChange={(e) => setCategory(e.target.value)}
                           className="w-full bg-gray-50 border border-gray-100 rounded-lg p-2.5 focus:outline-none focus:border-[#967850]"
                         >
-                          <option>Lifestyle</option>
-                          <option>Kitchenware</option>
-                          <option>Cosmetics</option>
+                          {categoriesData.map((c) => (
+                            <option key={c.slug} value={c.slug}>{c.name}</option>
+                          ))}
                         </select>
                       </div>
 
@@ -1040,9 +1072,16 @@ export default function AdminPage() {
                             />
                           </div>
 
-                          <div className="pt-2">
+                          <div className="pt-2 flex items-center gap-3">
                             <button className="bg-[#967850] hover:bg-[#7d6340] text-white px-5 py-2.5 rounded-lg font-bold flex items-center gap-1.5 transition">
                               <Edit size={16} /> Update Details
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => selectedId && handleDeleteProduct(selectedId, editing.title)}
+                              className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-4 py-2.5 rounded-lg font-bold flex items-center gap-1.5 transition"
+                            >
+                              <Trash2 size={16} /> Delete
                             </button>
                           </div>
                         </div>
@@ -1085,6 +1124,7 @@ export default function AdminPage() {
                         <th className="py-3.5 px-4 w-36 text-center">Status</th>
                         <th className="py-3.5 px-4 w-48 text-center">Stock Count</th>
                         <th className="py-3.5 px-4 w-40 text-center">Quick Adjust</th>
+                        <th className="py-3.5 px-4 w-20 text-center">Delete</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1162,6 +1202,15 @@ export default function AdminPage() {
                                   <Check size={10} /> Set
                                 </button>
                               </div>
+                            </td>
+                            <td className="py-3 px-4 text-center">
+                              <button
+                                onClick={() => handleDeleteProduct(p.id, p.title)}
+                                className="w-7 h-7 mx-auto bg-red-50 border border-red-200 rounded flex items-center justify-center hover:bg-red-100 text-red-600 transition"
+                                title="Delete product"
+                              >
+                                <Trash2 size={13} />
+                              </button>
                             </td>
                           </tr>
                         );
@@ -1388,155 +1437,115 @@ export default function AdminPage() {
 }
 
 // Chart Components declared in file (avoids hydration and build issues)
-function SalesChart() {
+function SalesChart({ points }: { points: { label: string; val: number }[] }) {
+  const data = points && points.length ? points : [{ label: "", val: 0 }];
+  const x0 = 40, x1 = 480, yTop = 40, yBottom = 200;
+  const maxVal = Math.max(...data.map((d) => d.val), 1);
+  const niceMax = Math.ceil(maxVal / 4) * 4 || 4;
+  const step = data.length > 1 ? (x1 - x0) / (data.length - 1) : 0;
+  const coords = data.map((d, i) => {
+    const x = x0 + step * i;
+    const y = yBottom - (d.val / niceMax) * (yBottom - yTop);
+    return { x, y, ...d };
+  });
+
+  const linePath = coords.map((c, i) => `${i === 0 ? "M" : "L"} ${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(" ");
+  const areaPath = `${linePath} L ${coords[coords.length - 1].x.toFixed(1)},${yBottom} L ${coords[0].x.toFixed(1)},${yBottom} Z`;
+
+  const fmtK = (n: number) => (n >= 1000 ? `${Math.round(n / 100) / 10}K` : `${n}`);
+  const yTicks = [0, 1, 2, 3, 4].map((i) => ({
+    y: yBottom - (i / 4) * (yBottom - yTop),
+    val: (niceMax / 4) * i,
+  }));
+
   return (
     <div className="w-full h-64 relative">
       <svg className="w-full h-full" viewBox="0 0 500 240" preserveAspectRatio="none">
-        {/* Grids */}
-        <line x1="40" y1="40" x2="480" y2="40" stroke="#f1f5f9" strokeWidth="1" />
-        <line x1="40" y1="80" x2="480" y2="80" stroke="#f1f5f9" strokeWidth="1" />
-        <line x1="40" y1="120" x2="480" y2="120" stroke="#f1f5f9" strokeWidth="1" />
-        <line x1="40" y1="160" x2="480" y2="160" stroke="#f1f5f9" strokeWidth="1" />
-        <line x1="40" y1="200" x2="480" y2="200" stroke="#f1f5f9" strokeWidth="2" strokeDasharray="3 3" />
+        {yTicks.map((t, i) => (
+          <line key={i} x1={x0} y1={t.y} x2={x1} y2={t.y} stroke="#f1f5f9" strokeWidth={i === 0 ? 2 : 1} strokeDasharray={i === 0 ? "3 3" : undefined} />
+        ))}
 
-        {/* Gradient fill */}
         <defs>
           <linearGradient id="purpleGrad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.25" />
             <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.0" />
           </linearGradient>
         </defs>
-        
-        {/* Area under curve */}
-        <path 
-          d="M 40,190 Q 90,150 140,170 T 240,100 T 340,120 T 440,50 L 480,45 L 480,200 L 40,200 Z" 
-          fill="url(#purpleGrad)" 
-        />
 
-        {/* The smooth line */}
-        <path 
-          d="M 40,190 Q 90,150 140,170 T 240,100 T 340,120 T 440,50 L 480,45" 
-          fill="none" 
-          stroke="#8b5cf6" 
-          strokeWidth="3.5" 
-          strokeLinecap="round"
-        />
+        <path d={areaPath} fill="url(#purpleGrad)" />
+        <path d={linePath} fill="none" stroke="#8b5cf6" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
 
-        {/* Data points */}
-        <circle cx="40" cy="190" r="5" fill="#ffffff" stroke="#8b5cf6" strokeWidth="2.5" />
-        <circle cx="110" cy="155" r="5" fill="#ffffff" stroke="#8b5cf6" strokeWidth="2.5" />
-        <circle cx="180" cy="173" r="5" fill="#ffffff" stroke="#8b5cf6" strokeWidth="2.5" />
-        <circle cx="250" cy="108" r="5" fill="#ffffff" stroke="#8b5cf6" strokeWidth="2.5" />
-        <circle cx="320" cy="138" r="5" fill="#ffffff" stroke="#8b5cf6" strokeWidth="2.5" />
-        <circle cx="390" cy="98" r="5" fill="#ffffff" stroke="#8b5cf6" strokeWidth="2.5" />
-        <circle cx="460" cy="52" r="5" fill="#ffffff" stroke="#8b5cf6" strokeWidth="2.5" />
+        {coords.map((c, i) => (
+          <circle key={i} cx={c.x} cy={c.y} r="5" fill="#ffffff" stroke="#8b5cf6" strokeWidth="2.5" />
+        ))}
 
-        {/* Labels - Y Axis */}
-        <text x="10" y="45" className="text-[10px] fill-gray-400 font-medium">100K</text>
-        <text x="15" y="85" className="text-[10px] fill-gray-400 font-medium">80K</text>
-        <text x="15" y="125" className="text-[10px] fill-gray-400 font-medium">60K</text>
-        <text x="15" y="165" className="text-[10px] fill-gray-400 font-medium">40K</text>
-        <text x="15" y="205" className="text-[10px] fill-gray-400 font-medium">20K</text>
+        {yTicks.map((t, i) => (
+          <text key={i} x="12" y={t.y + 4} className="text-[10px] fill-gray-400 font-medium">{fmtK(t.val)}</text>
+        ))}
 
-        {/* Labels - X Axis */}
-        <text x="30" y="225" className="text-[9px] sm:text-[10px] fill-gray-400 font-medium">01 May</text>
-        <text x="100" y="225" className="text-[9px] sm:text-[10px] fill-gray-400 font-medium">05 May</text>
-        <text x="170" y="225" className="text-[9px] sm:text-[10px] fill-gray-400 font-medium">10 May</text>
-        <text x="240" y="225" className="text-[9px] sm:text-[10px] fill-gray-400 font-medium">15 May</text>
-        <text x="310" y="225" className="text-[9px] sm:text-[10px] fill-gray-400 font-medium">20 May</text>
-        <text x="380" y="225" className="text-[9px] sm:text-[10px] fill-gray-400 font-medium">25 May</text>
-        <text x="450" y="225" className="text-[9px] sm:text-[10px] fill-gray-400 font-medium">31 May</text>
+        {coords.map((c, i) => (
+          <text key={i} x={c.x} y="225" textAnchor="middle" className="text-[9px] sm:text-[10px] fill-gray-400 font-medium">{c.label}</text>
+        ))}
       </svg>
     </div>
   );
 }
 
-function StatusDonutChart() {
+function StatusDonutChart({ counts, total }: { counts: Record<string, number>; total: number }) {
+  const C = 2 * Math.PI * 36; // circumference for r=36
+  const segDefs = [
+    { key: "Delivered", color: "#10b981" },
+    { key: "Processing", color: "#3b82f6" },
+    { key: "Shipped", color: "#f97316" },
+    { key: "Cancelled", color: "#ef4444" },
+  ];
+
+  let offset = 0;
+  const segments = segDefs.map((s) => {
+    const value = counts[s.key] || 0;
+    const frac = total > 0 ? value / total : 0;
+    const dash = frac * C;
+    const seg = { ...s, value, frac, dash, dashOffset: -offset };
+    offset += dash;
+    return seg;
+  });
+
   return (
     <div className="flex flex-col sm:flex-row items-center justify-around gap-4 py-2">
       <div className="relative w-40 h-40">
         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="36" stroke="#f1f5f9" strokeWidth="14" fill="transparent" />
-          
-          {/* Delivered: 51.4% */}
-          <circle 
-            cx="50" 
-            cy="50" 
-            r="36" 
-            stroke="#10b981" 
-            strokeWidth="14" 
-            fill="transparent" 
-            strokeDasharray="116.3 226.2" 
-            strokeDashoffset="0"
-          />
-
-          {/* Processing: 26% */}
-          <circle 
-            cx="50" 
-            cy="50" 
-            r="36" 
-            stroke="#3b82f6" 
-            strokeWidth="14" 
-            fill="transparent" 
-            strokeDasharray="58.8 226.2" 
-            strokeDashoffset="-116.3"
-          />
-
-          {/* Shipped: 14.5% */}
-          <circle 
-            cx="50" 
-            cy="50" 
-            r="36" 
-            stroke="#f97316" 
-            strokeWidth="14" 
-            fill="transparent" 
-            strokeDasharray="32.8 226.2" 
-            strokeDashoffset="-175.1"
-          />
-
-          {/* Cancelled: 8.1% */}
-          <circle 
-            cx="50" 
-            cy="50" 
-            r="36" 
-            stroke="#ef4444" 
-            strokeWidth="14" 
-            fill="transparent" 
-            strokeDasharray="18.3 226.2" 
-            strokeDashoffset="-207.9"
-          />
+          {segments.map((s) =>
+            s.value > 0 ? (
+              <circle
+                key={s.key}
+                cx="50"
+                cy="50"
+                r="36"
+                stroke={s.color}
+                strokeWidth="14"
+                fill="transparent"
+                strokeDasharray={`${s.dash.toFixed(2)} ${(C - s.dash).toFixed(2)}`}
+                strokeDashoffset={s.dashOffset.toFixed(2)}
+              />
+            ) : null
+          )}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <span className="text-xl font-bold text-gray-800">1,248</span>
+          <span className="text-xl font-bold text-gray-800">{total.toLocaleString()}</span>
           <span className="text-xs text-gray-400 font-medium">Total</span>
         </div>
       </div>
 
       <div className="flex flex-col gap-2.5 text-xs text-gray-600 font-medium">
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-[#10b981]" />
-          <span className="w-16">Delivered</span>
-          <span className="text-gray-900 font-semibold">642</span>
-          <span className="text-gray-400 text-[10px]">(51.4%)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-[#3b82f6]" />
-          <span className="w-16">Processing</span>
-          <span className="text-gray-900 font-semibold">325</span>
-          <span className="text-gray-400 text-[10px]">(26.0%)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-[#f97316]" />
-          <span className="w-16">Shipped</span>
-          <span className="text-gray-900 font-semibold">181</span>
-          <span className="text-gray-400 text-[10px]">(14.5%)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-[#ef4444]" />
-          <span className="w-16">Cancelled</span>
-          <span className="text-gray-900 font-semibold">100</span>
-          <span className="text-gray-400 text-[10px]">(8.1%)</span>
-        </div>
+        {segments.map((s) => (
+          <div key={s.key} className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: s.color }} />
+            <span className="w-16">{s.key}</span>
+            <span className="text-gray-900 font-semibold">{s.value}</span>
+            <span className="text-gray-400 text-[10px]">({(s.frac * 100).toFixed(1)}%)</span>
+          </div>
+        ))}
       </div>
     </div>
   );

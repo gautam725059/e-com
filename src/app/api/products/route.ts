@@ -52,3 +52,24 @@ export async function PATCH(req: Request) {
     return new Response('Server error', { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const url = new URL(req.url);
+    const idParam = url.searchParams.get('id');
+    const id = idParam ? Number(idParam) : NaN;
+    if (!id) return new Response('Missing id', { status: 400 });
+
+    const productsRaw = await fs.readFile(productsPath, 'utf-8');
+    const products = JSON.parse(productsRaw) as any[];
+    const idx = products.findIndex((p) => p.id === id);
+    if (idx === -1) return new Response('Not found', { status: 404 });
+
+    const [removed] = products.splice(idx, 1);
+    await fs.writeFile(productsPath, JSON.stringify(products, null, 2), 'utf-8');
+    return new Response(JSON.stringify({ ok: true, id: removed.id }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  } catch (err) {
+    console.error(err);
+    return new Response('Server error', { status: 500 });
+  }
+}
