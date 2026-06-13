@@ -1,25 +1,30 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import products from "@/data/products.json";
 import { Search } from "lucide-react";
+import type { Product } from "@/lib/products";
 
 export default function SearchBar() {
   const [query, setQuery] = useState("");
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((data) => setProducts(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, []);
 
   const filteredProducts = useMemo(() => {
     if (!query.trim()) return [];
 
     return products
-      .filter(
-        (product) =>
-          product.title
-            .toLowerCase()
-            .includes(query.toLowerCase())
+      .filter((product) =>
+        product.title.toLowerCase().includes(query.toLowerCase())
       )
       .slice(0, 6);
-  }, [query]);
+  }, [query, products]);
 
   return (
     <div className="relative  w-full max-w-xl">

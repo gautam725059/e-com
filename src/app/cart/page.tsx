@@ -1,15 +1,24 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { useRequireLogin } from "@/hooks/useRequireLogin";
 import { resolveImg } from "@/data/imageMap";
-import products from "@/data/products.json";
+import type { Product } from "@/lib/products";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export default function CartPage() {
   const { allowed } = useRequireLogin("/cart");
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((data) => setProducts(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, []);
   const {
     items,
     updateQty,

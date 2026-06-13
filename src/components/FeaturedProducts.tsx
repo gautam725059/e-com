@@ -1,22 +1,32 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import products from "@/data/products.json";
-import imageMap from "@/data/imageMap";
+import { resolveImg } from "@/data/imageMap";
 import { useCart } from "@/context/CartContext";
+import type { Product } from "@/lib/products";
 
 export default function FeaturedProducts() {
   const { addItem } = useCart();
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((data) => setProducts(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, []);
+
   const featured = products.slice(0, 6);
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-16">
       <h2 className="text-3xl font-bold text-center mb-8">Featured Products</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {featured.map((p: any) => (
+        {featured.map((p) => (
           <article key={p.id} className="bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-lg transform hover:-translate-y-1 transition relative">
             <div className="relative">
-              <img src={imageMap[p.image] ?? p.image} alt={p.title} className="w-full h-56 sm:h-64 object-cover" />
+              <img src={resolveImg(p.image)} alt={p.title} className="w-full h-56 sm:h-64 object-cover" />
               <div className="absolute top-3 left-3 bg-navy-800 text-white text-sm px-3 py-1 rounded">₹{p.price}</div>
             </div>
 

@@ -1,23 +1,21 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import products from "@/data/products.json";
-import categories, { getCategory } from "@/data/categories";
+import { getCategory } from "@/data/categories";
+import { getProductsByCategory } from "@/lib/products";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-type Props = { params: Promise<{ slug: string }> };
+export const dynamic = "force-dynamic";
 
-export function generateStaticParams() {
-  return categories.map((c) => ({ slug: c.slug }));
-}
+type Props = { params: Promise<{ slug: string }> };
 
 export default async function CategoryPage({ params }: Props) {
   const { slug } = await params;
   const category = getCategory(slug);
   if (!category) return notFound();
 
-  const items = (products as any[]).filter((p) => p.category === slug);
+  const items = await getProductsByCategory(slug);
 
   return (
     <>

@@ -1,30 +1,39 @@
-import fs from 'fs/promises';
-import path from 'path';
+import { NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
+export const dynamic = "force-dynamic";
+
+const BUCKET = "product-images";
+
+// Accepts { filename, dataUrl } and stores the image in Supabase Storage,
+// returning a public URL usable directly as a product image.
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { filename, dataUrl } = body as { filename: string; dataUrl: string };
-    if (!filename || !dataUrl) return new Response('Invalid', { status: 400 });
+    const { filename, dataUrl } = (await req.json()) as {
+      filename: string;
+      dataUrl: string;
+    };
+    if (!filename || !dataUrl) {
+      return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+    }
 
-    // dataUrl looks like: data:<mime>;base64,<data>
     const match = dataUrl.match(/^data:(.+);base64,(.+)$/);
-    if (!match) return new Response('Bad data', { status: 400 });
-    const base64 = match[2];
-    const buffer = Buffer.from(base64, 'base64');
+    if (!match) return NextResponse.json({ error: "Bad data url" }, { status: 400 });
 
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    await fs.mkdir(uploadsDir, { recursive: true });
+    const mime = match[1];
+    const buffer = Buffer.from(match[2], "base64");
+    const safe = filename.replace(/[^a-zA-Z0-9.\-_]/g, "_");
+    const key = `${Date.now()}-${safe}`;
 
-    // ensure unique filename
-    const safeName = filename.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-    const filePath = path.join(uploadsDir, safeName);
-    await fs.writeFile(filePath, buffer);
+    const { error } = await supabaseAdmin.storage
+      .from(BUCKET)
+      .upload(key, buffer, { contentType: mime, upsert: false });
+    if (error) throw error;
 
-    const publicPath = `/uploads/${safeName}`;
-    return new Response(JSON.stringify({ path: publicPath }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-  } catch (err) {
+    const { data } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(key);
+    return NextResponse.json({ path: data.publicUrl });
+  } catch (err: any) {
     console.error(err);
-    return new Response('Server error', { status: 500 });
+    return NextResponse.json({ error: err.message || "Server error" }, { status: 500 });
   }
 }

@@ -1,75 +1,66 @@
-import fs from 'fs/promises';
-import path from 'path';
+import { NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { getAllProducts } from "@/lib/products";
 
-const productsPath = path.join(process.cwd(), 'src', 'data', 'products.json');
+export const dynamic = "force-dynamic";
 
+// List products (Supabase, with local fallback)
 export async function GET() {
-  try {
-    const productsRaw = await fs.readFile(productsPath, 'utf-8');
-    const products = JSON.parse(productsRaw) as any[];
-    return new Response(JSON.stringify(products), { status: 200, headers: { 'Content-Type': 'application/json' } });
-  } catch (err) {
-    console.error(err);
-    return new Response('Server error', { status: 500 });
-  }
+  const products = await getAllProducts();
+  return NextResponse.json(products);
 }
 
+// Create a product
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const productsRaw = await fs.readFile(productsPath, 'utf-8');
-    const products = JSON.parse(productsRaw) as any[];
-
-    const maxId = products.reduce((m, p) => Math.max(m, p.id || 0), 0);
-    const newProduct = { id: maxId + 1, ...body };
-    products.push(newProduct);
-
-    await fs.writeFile(productsPath, JSON.stringify(products, null, 2), 'utf-8');
-    return new Response(JSON.stringify(newProduct), { status: 200, headers: { 'Content-Type': 'application/json' } });
-  } catch (err) {
+    // Never trust a client-supplied id; let the DB assign it.
+    const { id: _ignore, ...insert } = body;
+    const { data, error } = await supabaseAdmin
+      .from("products")
+      .insert(insert)
+      .select()
+      .single();
+    if (error) throw error;
+    return NextResponse.json(data);
+  } catch (err: any) {
     console.error(err);
-    return new Response('Server error', { status: 500 });
+    return NextResponse.json({ error: err.message || "Server error" }, { status: 500 });
   }
 }
 
+// Update a product (partial)
 export async function PATCH(req: Request) {
   try {
     const body = await req.json();
-    const { id, ...updates } = body as { id: number; [key: string]: any };
-    if (!id) return new Response('Missing id', { status: 400 });
+    const { id, ...updates } = body as { id: number; [k: string]: any };
+    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
-    const productsRaw = await fs.readFile(productsPath, 'utf-8');
-    const products = JSON.parse(productsRaw) as any[];
-    const idx = products.findIndex((p) => p.id === id);
-    if (idx === -1) return new Response('Not found', { status: 404 });
-
-    // merge updates
-    products[idx] = { ...products[idx], ...updates };
-    await fs.writeFile(productsPath, JSON.stringify(products, null, 2), 'utf-8');
-    return new Response(JSON.stringify(products[idx]), { status: 200, headers: { 'Content-Type': 'application/json' } });
-  } catch (err) {
+    const { data, error } = await supabaseAdmin
+      .from("products")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    return NextResponse.json(data);
+  } catch (err: any) {
     console.error(err);
-    return new Response('Server error', { status: 500 });
+    return NextResponse.json({ error: err.message || "Server error" }, { status: 500 });
   }
 }
 
+// Delete a product (?id=)
 export async function DELETE(req: Request) {
   try {
-    const url = new URL(req.url);
-    const idParam = url.searchParams.get('id');
-    const id = idParam ? Number(idParam) : NaN;
-    if (!id) return new Response('Missing id', { status: 400 });
+    const id = Number(new URL(req.url).searchParams.get("id"));
+    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
-    const productsRaw = await fs.readFile(productsPath, 'utf-8');
-    const products = JSON.parse(productsRaw) as any[];
-    const idx = products.findIndex((p) => p.id === id);
-    if (idx === -1) return new Response('Not found', { status: 404 });
-
-    const [removed] = products.splice(idx, 1);
-    await fs.writeFile(productsPath, JSON.stringify(products, null, 2), 'utf-8');
-    return new Response(JSON.stringify({ ok: true, id: removed.id }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-  } catch (err) {
+    const { error } = await supabaseAdmin.from("products").delete().eq("id", id);
+    if (error) throw error;
+    return NextResponse.json({ ok: true, id });
+  } catch (err: any) {
     console.error(err);
-    return new Response('Server error', { status: 500 });
+    return NextResponse.json({ error: err.message || "Server error" }, { status: 500 });
   }
 }

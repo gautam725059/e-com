@@ -1,9 +1,11 @@
 import Link from "next/link";
-import products from "@/data/products.json";
 import categories, { getCategory } from "@/data/categories";
+import { getAllProducts } from "@/lib/products";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+
+export const dynamic = "force-dynamic";
 
 type Props = {
   searchParams?: Promise<{ page?: string; category?: string }>;
@@ -13,7 +15,8 @@ export default async function ProductsPage({ searchParams }: Props) {
   const sp = (await searchParams) ?? {};
   const activeCategory = sp.category ? getCategory(sp.category) : undefined;
 
-  const all = (products as any[]).filter((p) =>
+  const products = await getAllProducts();
+  const all = products.filter((p) =>
     activeCategory ? p.category === activeCategory.slug : true
   );
 

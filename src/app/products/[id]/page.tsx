@@ -1,18 +1,21 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import products from "@/data/products.json";
 import imageMap from "@/data/imageMap";
 import { getCategory } from "@/data/categories";
+import { getAllProducts } from "@/lib/products";
 import ProductDetailClient from "@/components/ProductDetailClient";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+
+export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ id: string }> };
 
 export default async function ProductDetail({ params }: Props) {
   const p = await params;
   const id = parseInt(p.id, 10);
-  const product = (products as any[]).find((p) => p.id === id);
+  const products = await getAllProducts();
+  const product = products.find((p) => p.id === id);
   if (!product) return notFound();
 
   const category = product.category ? getCategory(product.category) : undefined;
