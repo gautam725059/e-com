@@ -10,7 +10,8 @@
       "wall-hooks.avif",
       "wall-hooks-2.svg"
     ],
-    "stock": 91
+    "stock": 91,
+    "category": "adhesive-hooks"
   },
   {
     "id": 2,
@@ -19,7 +20,8 @@
     "currency": "$",
     "description": "Stylish claw hair clip in a smooth resin finish — holds hair securely without damage. Available in multiple colors.",
     "image": "clow-clips.avif",
-    "stock": 15
+    "stock": 15,
+    "category": "hair-accessories"
   },
   {
     "id": 3,
@@ -28,7 +30,8 @@
     "currency": "$",
     "description": "Premium synthetic hair extensions for instant length and volume. Heat-resistant, easy to style and blend with natural hair.",
     "image": "hair-extansions.avif",
-    "stock": 12
+    "stock": 12,
+    "category": "hair-accessories"
   },
   {
     "id": 4,
@@ -37,7 +40,8 @@
     "currency": "$",
     "description": "Professional 5-piece stainless steel kitchen knife set with ergonomic handles and a magnetic wooden block for safe storage.",
     "image": "knife-set.avif",
-    "stock": 4
+    "stock": 4,
+    "category": "kitchen-accessories"
   },
   {
     "id": 5,
@@ -46,7 +50,8 @@
     "currency": "",
     "description": "Leather key ring with a sturdy metal clasp — minimalist design to keep your keys organized and easy to carry.",
     "image": "key-ring.avif",
-    "stock": 120
+    "stock": 120,
+    "category": "key-chain"
   },
   {
     "id": 6,
@@ -55,6 +60,7 @@
     "currency": "$",
     "description": "Curated home decoration kit including cushions, frames and small accents to refresh any room with a coordinated look.",
     "image": "decoration-kit.jpg",
-    "stock": 22
+    "stock": 22,
+    "category": "birthday-decorations"
   }
 ]

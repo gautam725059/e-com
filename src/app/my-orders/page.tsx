@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useRequireLogin } from "@/hooks/useRequireLogin";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function MyOrdersPage() {
+  const { allowed } = useRequireLogin("/my-orders");
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    if (allowed) fetchOrders();
+  }, [allowed]);
 
   async function fetchOrders() {
     try {
@@ -42,16 +46,19 @@ export default function MyOrdersPage() {
     }
   }
 
-  if (loading) {
+  if (!allowed || loading) {
     return (
-      <div className="p-10">
-        Loading Orders...
-      </div>
+      <>
+        <Navbar />
+        <main className="max-w-5xl mx-auto p-10 text-gray-500">Loading orders…</main>
+      </>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <>
+      <Navbar />
+      <main className="max-w-5xl mx-auto p-6 min-h-[50vh]">
       <h1 className="text-3xl font-bold mb-6">
         My Orders
       </h1>
@@ -91,6 +98,8 @@ export default function MyOrdersPage() {
           ))}
         </div>
       )}
-    </div>
+      </main>
+      <Footer />
+    </>
   );
 }

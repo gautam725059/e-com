@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
-import AddToCartButton from "@/components/AddToCartButton";
 
 export default function ProductDetailClient({ product, imageMap, products }: any) {
   const gallery = (product.images && product.images.length) ? product.images : [product.image];
@@ -15,6 +14,16 @@ export default function ProductDetailClient({ product, imageMap, products }: any
   const salePrice = product.price;
   const router = useRouter();
   const { addItem } = useCart();
+
+  const inStock = (product.stock ?? 0) > 0;
+
+  const cartLine = {
+    id: product.id,
+    title: product.title,
+    price: product.price,
+    currency: product.currency,
+    image: product.image,
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -68,27 +77,34 @@ export default function ProductDetailClient({ product, imageMap, products }: any
             <div className="px-4 py-2">{qty}</div>
             <button onClick={() => setQty((q) => q + 1)} className="px-3 py-2">+</button>
           </div>
-          <div className="ml-auto text-sm text-red-500">SOLD OUT</div>
+          <div className="ml-auto text-sm font-medium">
+            {inStock ? (
+              <span className="text-green-600">{product.stock} in stock</span>
+            ) : (
+              <span className="text-red-500">SOLD OUT</span>
+            )}
+          </div>
         </div>
 
-        <div className="mt-6 flex gap-3 items-center">
+        <div className="mt-6 flex flex-col sm:flex-row gap-3">
 
           <button
+            disabled={!inStock}
             onClick={() => {
-              addItem(
-                {
-                  id: product.id,
-                  title: product.title,
-                  price: product.price,
-                  currency: product.currency,
-                  image: product.image,
-                },
-                qty
-              );
+              addItem(cartLine, qty);
+            }}
+            className="px-6 py-3 rounded-lg border-2 border-navy-700 text-navy-700 font-medium hover:bg-navy-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Add to Cart
+          </button>
 
+          <button
+            disabled={!inStock}
+            onClick={() => {
+              addItem(cartLine, qty);
               router.push("/cart");
             }}
-            className="px-6 py-3 bg-navy-700 text-white rounded-lg hover:bg-navy-800"
+            className="px-6 py-3 bg-navy-700 text-white rounded-lg font-medium hover:bg-navy-800 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Buy Now
           </button>
@@ -97,7 +113,7 @@ export default function ProductDetailClient({ product, imageMap, products }: any
         <div className="mt-6 flex flex-col gap-2 text-sm text-gray-600">
           <div className="flex items-center gap-2"><span className="px-2 py-1 bg-gray-100 rounded">Fast Shipping</span></div>
           <div className="flex items-center gap-2"><span className="px-2 py-1 bg-gray-100 rounded">Secure payment</span></div>
-          <div className="mt-2">Availability: <span className="text-gray-500">Out of stock</span></div>
+          <div className="mt-2">Availability: <span className={inStock ? "text-green-600" : "text-red-500"}>{inStock ? "In stock" : "Out of stock"}</span></div>
         </div>
       </aside>
 

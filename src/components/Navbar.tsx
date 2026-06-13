@@ -60,25 +60,25 @@ export default function Navbar() {
       {/* Top Header Section (Always Sticky) */}
       <div className="max-w-7xl mx-auto px-4 lg:px-6">
 
-        <div className="h-16 lg:h-20 flex items-center justify-between">
+        <div className="h-16 lg:h-20 flex items-center justify-between gap-2 sm:gap-4">
 
           {/* Logo */}
           <Image
             src="/images/shanya1.png"
             alt="Shanya"
-            width={180}
-            height={60}
-            className="h-12 lg:h-14 w-auto object-contain"
+            width={160}
+            height={160}
+            className="h-10 lg:h-14 w-auto object-contain shrink-0"
             priority
           />
 
-          {/* Desktop Search */}
-          <div className="hidden md:flex flex-1 justify-center px-8">
+          {/* Search — single line, inline on every screen size */}
+          <div className="flex flex-1 justify-center px-1 md:px-8 min-w-0">
             <SearchBar />
           </div>
 
           {/* Right Side Controls */}
-          <div className="flex items-center gap-4 lg:gap-6">
+          <div className="flex items-center gap-3 lg:gap-6 shrink-0">
 
 
 
@@ -149,11 +149,6 @@ export default function Navbar() {
             </button>
 
           </div>
-        </div>
-
-        {/* Mobile Search */}
-        <div className="md:hidden pb-3">
-          <SearchBar />
         </div>
 
       </div>
