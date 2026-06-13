@@ -7,7 +7,7 @@ const imageMap: { [key: string]: string } = {
   'key-ring.avif': '/images/key-ring.avif',
   'decoration-kit.jpg': '/images/decoration-kit.jpg',
   'wall-hooks-2.svg': '/images/wall-hooks-2.svg',
-  'Bathroom-Accessories.avif': '/images/Bathroom-Accessories.avif',
+  'Bathroom-Accessories.avif': '/images/Bathroom.avif',
 };
 
 /**
