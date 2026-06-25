@@ -17,9 +17,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Shanya",
+  title: "Shanya — Hair Accessories & Home Essentials | India",
   description:
-    "A modern e-commerce store built with Next.js showcasing premium lifestyle and kitchen products.",
+    "Shop premium hair accessories, home essentials & kitchen products at Shanya. Free shipping on orders over ₹1000. Easy 30-day returns.",
 };
 
 export default function RootLayout({
