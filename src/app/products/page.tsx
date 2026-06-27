@@ -1,104 +1,65 @@
 import Link from "next/link";
-import categories, { getCategory } from "@/data/categories";
-import { getAllProducts } from "@/lib/products";
-import ProductCard from "@/components/ProductCard";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import StoreLayout from "@/components/layout/StoreLayout";
+import ProductCard from "@/components/store/ProductCard";
+import { PRODUCTS, CATEGORIES, slugify, categoryNameFromSlug } from "@/lib/data";
 
-export const dynamic = "force-dynamic";
+type Props = { searchParams?: Promise<{ cat?: string }> };
 
-type Props = {
-  searchParams?: Promise<{ page?: string; category?: string }>;
-};
-
-export default async function ProductsPage({ searchParams }: Props) {
+export default async function ShopPage({ searchParams }: Props) {
   const sp = (await searchParams) ?? {};
-  const activeCategory = sp.category ? getCategory(sp.category) : undefined;
-
-  const products = await getAllProducts();
-  const all = products.filter((p) =>
-    activeCategory ? p.category === activeCategory.slug : true
-  );
-
-  const page = parseInt(sp.page || "1", 10) || 1;
-  const perPage = 6;
-  const total = all.length;
-  const totalPages = Math.max(1, Math.ceil(total / perPage));
-  const start = (page - 1) * perPage;
-  const paged = all.slice(start, start + perPage);
-
-  const qs = (p: number) =>
-    `/products?${activeCategory ? `category=${activeCategory.slug}&` : ""}page=${p}`;
+  const active = sp.cat;
+  const items = active ? PRODUCTS.filter((p) => slugify(p.cat) === active) : PRODUCTS;
+  const title = active ? categoryNameFromSlug(active) ?? "Products" : "All Products";
 
   return (
-    <>
-      <Navbar />
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        <h1 className="text-3xl lg:text-4xl font-bold mb-6">
-          {activeCategory ? activeCategory.name : "All Products"}
-        </h1>
+    <StoreLayout>
+      <main className="page">
+        <div className="crumb">
+          <Link href="/">Home</Link> / <span className="cur">Shop</span>
+        </div>
+        <h1 className="page-h1">{title}</h1>
+        <p className="page-meta">
+          {items.length} {items.length === 1 ? "product" : "products"}
+        </p>
 
-        {/* Category filter chips */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          <Link
-            href="/products"
-            className={`px-4 py-2 rounded-full text-sm border transition ${
-              !activeCategory ? "bg-navy-700 text-white border-navy-700" : "bg-white text-gray-700 hover:border-navy-700"
-            }`}
-          >
+        <div className="chips">
+          <Link href="/products" className={`chip${!active ? " active" : ""}`}>
             All
           </Link>
-          {categories.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/products?category=${c.slug}`}
-              className={`px-4 py-2 rounded-full text-sm border transition ${
-                activeCategory?.slug === c.slug
-                  ? "bg-navy-700 text-white border-navy-700"
-                  : "bg-white text-gray-700 hover:border-navy-700"
-              }`}
-            >
-              {c.name}
-            </Link>
-          ))}
+          {CATEGORIES.map((c) => {
+            const slug = c.href.split("/").pop()!;
+            return (
+              <Link
+                key={c.name}
+                href={`/products?cat=${slug}`}
+                className={`chip${active === slug ? " active" : ""}`}
+              >
+                {c.name}
+              </Link>
+            );
+          })}
         </div>
 
-        {total > 0 ? (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-              {paged.map((p: any) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
-
-            <div className="mt-8 flex items-center justify-between flex-wrap gap-4">
-              <div className="text-sm text-gray-600">
-                Showing {start + 1} - {Math.min(start + perPage, total)} of {total} products
-              </div>
-              <div className="flex items-center gap-2">
-                <Link
-                  href={qs(Math.max(1, page - 1))}
-                  className={`px-3 py-2 rounded ${page === 1 ? "bg-gray-200 text-gray-500 pointer-events-none" : "bg-white border"}`}
-                >
-                  Prev
-                </Link>
-                <div className="px-3 py-2">Page {page} / {totalPages}</div>
-                <Link
-                  href={qs(Math.min(totalPages, page + 1))}
-                  className={`px-3 py-2 rounded ${page === totalPages ? "bg-gray-200 text-gray-500 pointer-events-none" : "bg-white border"}`}
-                >
-                  Next
-                </Link>
-              </div>
-            </div>
-          </>
+        {items.length > 0 ? (
+          <div className="prod-g">
+            {items.map((p) => (
+              <ProductCard key={p.id} p={p} />
+            ))}
+          </div>
         ) : (
-          <div className="bg-white border rounded-xl p-10 text-center text-gray-600">
-            No products found in this category.
+          <div className="empty-state">
+            <h2>Nothing here yet</h2>
+            <p>No products in this category right now.</p>
+            <Link
+              href="/products"
+              className="drawer-btn"
+              style={{ display: "inline-block", width: "auto", padding: "14px 30px" }}
+            >
+              Browse all products
+            </Link>
           </div>
         )}
       </main>
-      <Footer />
-    </>
+    </StoreLayout>
   );
 }

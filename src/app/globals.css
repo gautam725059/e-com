@@ -2,10 +2,10 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-  --brand: #13294b; /* navy — from Shanya logo */
+  --foreground: #0d0d0d;
+  --brand: #13294b; /* navy — legacy (cart/checkout/product pages) */
   --brand-dark: #0e1f3a;
-  --accent: #c9a14a; /* gold — from Shanya logo */
+  --accent: #c9a14a;
   --accent-dark: #ac8638;
   --muted: #6b7280;
   --card: #ffffff;
@@ -13,7 +13,7 @@
 }
 
 @theme {
-  /* Shanya brand — navy */
+  /* Legacy Shanya navy — used by cart, checkout, product & category pages */
   --color-navy-50: #eef1f7;
   --color-navy-100: #d5dcea;
   --color-navy-200: #aab9d4;
@@ -25,35 +25,58 @@
   --color-navy-800: #0e1f3a;
   --color-navy-900: #0a1730;
 
-  /* Shanya brand — gold */
+  /* Legacy Shanya gold scale */
   --color-gold-300: #e2c987;
   --color-gold-400: #d6b463;
   --color-gold-500: #c9a14a;
   --color-gold-600: #ac8638;
   --color-gold-700: #8a6a2b;
+
+  /* ── Luxury homepage palette ── */
+  --color-ink: #0d0d0d;
+  --color-offwhite: #fafafa;
+  --color-gold: #b8963e;
+  --color-gold-soft: #f7edd8;
+  --color-gold-medium: #d4ae6a;
+  --color-greytext: #6b6b6b;
+  --color-line: #e8e8e8;
+
+  /* Marquee */
+  --animate-marquee: marquee 32s linear infinite;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
+  --font-body: var(--font-inter);
+  --font-display: var(--font-playfair);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes marquee {
+  from {
+    transform: translateX(0);
   }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Pause the marquee when hovering its container */
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   scroll-behavior: smooth;
 }
@@ -73,18 +96,48 @@ html, body {
   padding-right: 1rem;
 }
 
-.btn { display:inline-flex; align-items:center; gap:8px; border-radius:8px; padding:0.5rem 1rem; font-weight:600; transition: background .2s ease, color .2s ease; }
-.btn-primary { background:var(--brand); color:white; }
-.btn-primary:hover { background:var(--brand-dark); }
-.btn-accent { background:var(--accent); color:var(--brand); }
-.btn-accent:hover { background:var(--accent-dark); color:white; }
-.btn-ghost { background:transparent; border:1px solid #e6e6e6; color:var(--foreground); }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.btn-primary {
+  background: var(--brand);
+  color: white;
+}
+.btn-primary:hover {
+  background: var(--brand-dark);
+}
+.btn-accent {
+  background: var(--accent);
+  color: var(--brand);
+}
+.btn-accent:hover {
+  background: var(--accent-dark);
+  color: white;
+}
+.btn-ghost {
+  background: transparent;
+  border: 1px solid #e6e6e6;
+  color: var(--foreground);
+}
 
-.card { background:var(--card); border-radius:12px; box-shadow:0 6px 18px rgba(15,23,42,0.06); }
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
 
-.muted { color:var(--muted); }
+.muted {
+  color: var(--muted);
+}
 
-/* Responsive helpers used in components */
 @media (min-width: 1024px) {
-  .lg\:show { display:block; }
+  .lg\:show {
+    display: block;
+  }
 }

@@ -1,0 +1,285 @@
+/* Shanya v3 luxury homepage — scoped under .sh so it never leaks to other pages.
+   Ported from the approved shanya-v3 reference. Fonts use the next/font CSS
+   variables (--font-inter / --font-playfair) set on <html> in layout.tsx. */
+
+.sh {
+  --gold: #b8963e;
+  --gold-lt: #f7edd8;
+  --gold-md: #d4ae6a;
+  --gold-dk: #8a6e2a;
+  --black: #0d0d0d;
+  --charcoal: #1c1c1c;
+  --grey: #6b6b6b;
+  --lgrey: #f5f5f5;
+  --white: #ffffff;
+  --offwhite: #fafafa;
+  --border: #e8e8e8;
+  box-sizing: border-box;
+  font-family: var(--font-inter), "Inter", sans-serif;
+  background: var(--white);
+  color: var(--black);
+  -webkit-font-smoothing: antialiased;
+}
+.sh * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+.sh a {
+  text-decoration: none;
+  color: inherit;
+}
+.sh img {
+  display: block;
+  max-width: 100%;
+}
+.sh ::selection {
+  background: var(--gold-lt);
+  color: var(--black);
+}
+
+/* ── ANNOUNCEMENT ── */
+.sh .ann { background: var(--black); color: #fff; font-size: 11.5px; text-align: center; padding: 9px 16px; letter-spacing: .06em; text-transform: uppercase; }
+.sh .ann b { color: var(--gold-md); }
+
+/* ── NAV ── */
+.sh .nav { background: var(--white); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 56px; height: 68px; position: sticky; top: 0; z-index: 100; }
+.sh .logo img { height: 44px; object-fit: contain; }
+.sh .logo-fb { font-family: var(--font-playfair), "Playfair Display", serif; font-size: 28px; font-weight: 700; color: var(--black); letter-spacing: .04em; }
+.sh .logo-fb span { display: block; width: 100%; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); margin-top: 2px; }
+.sh .nav-links { display: flex; gap: 2px; }
+.sh .nl { font-size: 12.5px; font-weight: 500; color: var(--grey); padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: all .18s; letter-spacing: .02em; }
+.sh .nl:hover { color: var(--black); background: var(--lgrey); }
+.sh .nav-r { display: flex; align-items: center; gap: 10px; }
+.sh .btn-sign { font-size: 12px; font-weight: 600; background: var(--black); color: #fff; border: none; padding: 9px 22px; border-radius: 6px; cursor: pointer; letter-spacing: .04em; transition: background .18s; }
+.sh .btn-sign:hover { background: var(--charcoal); }
+.sh .cart-w { position: relative; cursor: pointer; padding: 6px; display: inline-flex; }
+.sh .cart-w svg { color: var(--black); }
+.sh .cdot { position: absolute; top: 1px; right: 1px; background: var(--gold); color: #fff; font-size: 9px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+/* ── HERO ── */
+.sh .hero { position: relative; overflow: hidden; height: 580px; background: var(--black); }
+.sh .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; opacity: .55; }
+.sh .hero-content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 0 72px; max-width: 620px; }
+.sh .hero-tag { display: inline-flex; align-items: center; gap: 7px; border: 1px solid rgba(184, 150, 62, .5); color: var(--gold-md); font-size: 10.5px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; padding: 7px 16px; border-radius: 2px; margin-bottom: 22px; width: fit-content; background: rgba(184, 150, 62, .08); }
+.sh .hero-h1 { font-family: var(--font-playfair), "Playfair Display", serif; font-size: 64px; font-weight: 700; color: #fff; line-height: 1.04; margin-bottom: 6px; letter-spacing: -.02em; }
+.sh .hero-h1 em { color: var(--gold-md); font-style: italic; }
+.sh .hero-pre { font-size: 13px; font-weight: 400; color: rgba(255, 255, 255, .45); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px; }
+.sh .hero-sub { font-size: 15px; color: rgba(255, 255, 255, .55); line-height: 1.75; margin-bottom: 32px; max-width: 400px; font-weight: 300; }
+.sh .hero-btns { display: flex; gap: 14px; margin-bottom: 44px; flex-wrap: wrap; }
+.sh .btn-gold { background: var(--gold); color: #fff; font-size: 13px; font-weight: 600; padding: 14px 32px; border: none; cursor: pointer; letter-spacing: .05em; display: inline-flex; align-items: center; gap: 9px; transition: all .2s; border-radius: 2px; }
+.sh .btn-gold:hover { background: var(--gold-dk); transform: translateY(-1px); }
+.sh .btn-wline { background: transparent; color: #fff; font-size: 13px; font-weight: 500; padding: 14px 28px; border: 1px solid rgba(255, 255, 255, .35); cursor: pointer; letter-spacing: .04em; transition: all .2s; border-radius: 2px; }
+.sh .btn-wline:hover { border-color: #fff; background: rgba(255, 255, 255, .08); }
+.sh .hero-stats { display: flex; gap: 40px; }
+.sh .hs-v { font-family: var(--font-playfair), "Playfair Display", serif; font-size: 28px; font-weight: 700; color: var(--gold-md); }
+.sh .hs-l { font-size: 11px; color: rgba(255, 255, 255, .38); margin-top: 3px; letter-spacing: .04em; text-transform: uppercase; }
+.sh .hero-sale { position: absolute; bottom: 0; left: 0; right: 0; background: var(--gold); padding: 12px 56px; display: flex; align-items: center; justify-content: space-between; z-index: 3; }
+.sh .hero-sale p { font-size: 12px; font-weight: 600; color: #fff; letter-spacing: .06em; text-transform: uppercase; }
+.sh .hero-sale a { font-size: 12px; font-weight: 600; color: #fff; letter-spacing: .06em; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, .5); }
+
+/* ── MARQUEE ── */
+.sh .mq { background: var(--offwhite); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; padding: 13px 0; }
+.sh .mq-track { display: flex; width: max-content; animation: mq 32s linear infinite; }
+.sh .mq-track:hover { animation-play-state: paused; }
+@keyframes mq { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.sh .mq-item { display: inline-flex; align-items: center; gap: 10px; padding: 0 28px; font-size: 11.5px; font-weight: 500; color: var(--grey); white-space: nowrap; letter-spacing: .04em; text-transform: uppercase; }
+.sh .mq-dot { color: var(--gold); font-size: 8px; }
+.sh .mq-item b { color: var(--black); }
+
+/* ── SECTION BASE ── */
+.sh .sec { padding: 64px 56px; }
+.sh .sec-hd { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; }
+.sh .sec-ey { font-size: 10px; text-transform: uppercase; letter-spacing: .22em; color: var(--gold); font-weight: 600; margin-bottom: 8px; }
+.sh .sec-ti { font-family: var(--font-playfair), "Playfair Display", serif; font-size: 36px; color: var(--black); font-weight: 700; line-height: 1.1; }
+.sh .see-all { font-size: 12.5px; font-weight: 600; color: var(--black); display: flex; align-items: center; gap: 5px; cursor: pointer; letter-spacing: .04em; border-bottom: 1.5px solid var(--black); padding-bottom: 2px; transition: all .18s; white-space: nowrap; }
+.sh .see-all:hover { color: var(--gold); border-color: var(--gold); }
+
+/* ── CATEGORIES ── */
+.sh .cat-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+.sh .cat-item { display: block; border-radius: 0; overflow: hidden; aspect-ratio: .85; position: relative; cursor: pointer; background: var(--lgrey); }
+.sh .cat-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.25, .46, .45, .94); filter: brightness(.95); }
+.sh .cat-item:hover img { transform: scale(1.07); filter: brightness(.85); }
+.sh .cat-ov { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px 14px; background: linear-gradient(to top, rgba(13, 13, 13, .72) 35%, transparent); }
+.sh .cat-nm { font-size: 12px; font-weight: 600; color: #fff; letter-spacing: .04em; text-transform: uppercase; }
+.sh .cat-line { width: 24px; height: 1.5px; background: var(--gold); margin-top: 5px; transition: width .3s; }
+.sh .cat-item:hover .cat-line { width: 40px; }
+
+/* ── TRUST BAR ── */
+.sh .trust { background: var(--black); padding: 24px 56px; }
+.sh .trust-g { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-left: 1px solid rgba(255, 255, 255, .08); }
+.sh .ti { display: flex; align-items: center; gap: 14px; padding: 8px 32px; border-right: 1px solid rgba(255, 255, 255, .08); }
+.sh .ti-ic { width: 40px; height: 40px; border: 1px solid rgba(184, 150, 62, .4); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sh .ti-ic svg { color: var(--gold); }
+.sh .ti-t { font-size: 12.5px; font-weight: 600; color: #fff; letter-spacing: .02em; }
+.sh .ti-s { font-size: 11px; color: rgba(255, 255, 255, .38); margin-top: 2px; }
+
+/* ── FEATURED PRODUCTS ── */
+.sh .feat-g { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.sh .fc { background: var(--white); border: 1px solid var(--border); cursor: pointer; transition: all .22s; position: relative; }
+.sh .fc:hover { box-shadow: 0 12px 36px rgba(0, 0, 0, .1); transform: translateY(-4px); }
+.sh .fc-img { position: relative; height: 200px; overflow: hidden; background: var(--lgrey); }
+.sh .fc-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+.sh .fc:hover .fc-img img { transform: scale(1.06); }
+.sh .fc-off { position: absolute; top: 14px; left: 14px; background: var(--black); color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; padding: 5px 12px; }
+.sh .fc-body { padding: 20px; }
+.sh .fc-name { font-size: 15px; font-weight: 600; color: var(--black); margin-bottom: 5px; letter-spacing: .01em; }
+.sh .fc-sub { font-size: 12px; color: var(--grey); margin-bottom: 16px; line-height: 1.6; }
+.sh .fc-ft { display: flex; justify-content: space-between; align-items: center; }
+.sh .fc-price { font-family: var(--font-playfair), "Playfair Display", serif; font-size: 22px; font-weight: 700; color: var(--black); }
+.sh .fc-orig { font-size: 13px; color: #bbb; text-decoration: line-through; margin-left: 7px; }
+.sh .fc-btn { font-size: 11.5px; font-weight: 600; background: var(--black); color: #fff; border: none; padding: 9px 20px; cursor: pointer; letter-spacing: .05em; text-transform: uppercase; transition: background .18s; }
+.sh .fc-btn:hover { background: var(--gold); }
+
+/* ── PRODUCT GRID ── */
+.sh .prod-g { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+.sh .pc { background: var(--white); border: 1px solid var(--border); cursor: pointer; transition: all .22s; position: relative; }
+.sh .pc:hover { box-shadow: 0 8px 28px rgba(0, 0, 0, .09); transform: translateY(-3px); }
+.sh .pc-iw { position: relative; aspect-ratio: 1; overflow: hidden; background: var(--lgrey); }
+.sh .pc-img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+.sh .pc:hover .pc-img { transform: scale(1.08); }
+.sh .pc-wl { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; background: #fff; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .2s; cursor: pointer; }
+.sh .pc:hover .pc-wl { opacity: 1; }
+.sh .pc-wl svg { color: var(--grey); }
+.sh .pc-wl.on svg { color: #e84040; fill: #e84040; }
+.sh .pc-body { padding: 12px 14px 16px; }
+.sh .pc-cat { font-size: 9.5px; text-transform: uppercase; letter-spacing: .14em; color: var(--gold); font-weight: 600; margin-bottom: 4px; }
+.sh .pc-name { font-size: 13px; font-weight: 500; color: var(--black); margin-bottom: 7px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sh .pc-price { font-family: var(--font-playfair), "Playfair Display", serif; font-size: 17px; font-weight: 700; color: var(--black); }
+.sh .pc-add { width: 100%; font-size: 11px; font-weight: 600; background: var(--black); color: #fff; border: none; padding: 9px; cursor: pointer; margin-top: 9px; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background .18s; letter-spacing: .05em; text-transform: uppercase; }
+.sh .pc-add:hover { background: var(--gold); }
+.sh .pc-add.added { background: #16a34a; }
+
+/* ── DEAL ── */
+.sh .deal-wrap { padding: 0 56px 64px; }
+.sh .deal { background: var(--black); display: grid; grid-template-columns: 1fr 1fr; min-height: 340px; overflow: hidden; border: 1px solid #222; }
+.sh .deal-l { padding: 48px 44px; display: flex; flex-direction: column; justify-content: center; }
+.sh .deal-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(184, 150, 62, .12); border: 1px solid rgba(184, 150, 62, .35); color: var(--gold-md); font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 6px 15px; margin-bottom: 16px; width: fit-content; }
+.sh .deal-title { font-family: var(--font-playfair), "Playfair Display", serif; font-size: 32px; color: #fff; margin-bottom: 8px; line-height: 1.15; font-style: italic; }
+.sh .deal-sub { font-size: 13px; color: rgba(255, 255, 255, .45); line-height: 1.72; margin-bottom: 20px; font-weight: 300; }
+.sh .deal-pr { display: flex; align-items: baseline; gap: 14px; margin-bottom: 20px; }
+.sh .deal-now { font-family: var(--font-playfair), "Playfair Display", serif; font-size: 46px; font-weight: 700; color: #fff; }
+.sh .deal-was { font-size: 16px; color: rgba(255, 255, 255, .25); text-decoration: line-through; }
+.sh .deal-pct { background: var(--gold); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 12px; letter-spacing: .06em; }
+.sh .dt-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: .14em; color: rgba(255, 255, 255, .28); margin-bottom: 10px; }
+.sh .dt-row { display: flex; gap: 10px; margin-bottom: 24px; }
+.sh .dt-box { border: 1px solid rgba(255, 255, 255, .12); width: 56px; height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, .04); }
+.sh .dt-n { font-family: var(--font-playfair), "Playfair Display", serif; font-size: 26px; color: #fff; line-height: 1; font-variant-numeric: tabular-nums; }
+.sh .dt-u { font-size: 9px; color: rgba(255, 255, 255, .28); margin-top: 2px; text-transform: uppercase; letter-spacing: .05em; }
+.sh .deal-r { position: relative; overflow: hidden; }
+.sh .deal-r img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.7); }
+.sh .deal-r::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, var(--black) 0%, rgba(13, 13, 13, .2) 50%, transparent); z-index: 1; }
+.sh .btn-gold-sm { background: var(--gold); color: #fff; font-size: 13px; font-weight: 600; border: none; padding: 13px 30px; cursor: pointer; letter-spacing: .06em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; transition: background .18s; }
+.sh .btn-gold-sm:hover { background: var(--gold-dk); }
+
+/* ── TESTIMONIALS ── */
+.sh .testi-g { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.sh .tc { background: var(--white); border: 1px solid var(--border); padding: 24px; transition: all .2s; }
+.sh .tc:hover { box-shadow: 0 6px 24px rgba(0, 0, 0, .07); transform: translateY(-2px); }
+.sh .tc-q { font-family: var(--font-playfair), "Playfair Display", serif; font-size: 40px; color: var(--gold-lt); margin-bottom: 6px; line-height: 1; height: 24px; }
+.sh .tc-stars { display: flex; gap: 3px; margin-bottom: 12px; }
+.sh .tc-stars svg { color: #f59e0b; fill: #f59e0b; }
+.sh .tc-text { font-size: 12.5px; color: #444; line-height: 1.72; margin-bottom: 12px; }
+.sh .tc-prod { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--gold); font-weight: 600; margin-bottom: 14px; }
+.sh .tc-auth { display: flex; align-items: center; gap: 11px; padding-top: 14px; border-top: 1px solid var(--border); }
+.sh .tc-av { width: 36px; height: 36px; background: var(--black); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; letter-spacing: .04em; }
+.sh .tc-name { font-size: 13px; font-weight: 600; color: var(--black); }
+.sh .tc-loc { font-size: 11px; color: var(--grey); }
+.sh .rating-row { display: flex; align-items: center; gap: 5px; }
+.sh .rating-row svg { color: #f59e0b; fill: #f59e0b; }
+.sh .rating-row span { font-size: 13px; font-weight: 600; color: var(--black); margin-left: 5px; letter-spacing: .03em; }
+
+/* ── BLOG ── */
+.sh .blog-g { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.sh .bc { background: var(--white); border: 1px solid var(--border); cursor: pointer; transition: all .22s; overflow: hidden; }
+.sh .bc:hover { box-shadow: 0 8px 28px rgba(0, 0, 0, .08); transform: translateY(-3px); }
+.sh .bc-img { height: 170px; overflow: hidden; background: var(--lgrey); }
+.sh .bc-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+.sh .bc:hover .bc-img img { transform: scale(1.06); }
+.sh .bc-body { padding: 20px; }
+.sh .bc-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; color: var(--gold); margin-bottom: 7px; }
+.sh .bc-title { font-family: var(--font-playfair), "Playfair Display", serif; font-size: 19px; font-weight: 700; color: var(--black); margin-bottom: 8px; line-height: 1.3; }
+.sh .bc-sub { font-size: 12.5px; color: var(--grey); line-height: 1.62; margin-bottom: 14px; }
+.sh .bc-read { font-size: 12px; font-weight: 600; color: var(--black); display: inline-flex; align-items: center; gap: 5px; letter-spacing: .04em; border-bottom: 1.5px solid var(--black); padding-bottom: 2px; transition: all .18s; }
+.sh .bc-read:hover { color: var(--gold); border-color: var(--gold); }
+
+/* ── CONTACT ── */
+.sh .contact { background: var(--offwhite); border-top: 1px solid var(--border); padding: 64px 56px; }
+.sh .contact-inner { max-width: 720px; }
+.sh .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.sh .finput { width: 100%; background: var(--white); border: 1px solid var(--border); padding: 13px 16px; font-size: 13px; color: var(--black); font-family: var(--font-inter), "Inter", sans-serif; outline: none; transition: border-color .18s; border-radius: 0; }
+.sh .finput::placeholder { color: #bbb; }
+.sh .finput:focus { border-color: var(--gold); }
+.sh select.finput { cursor: pointer; }
+.sh .upload-row { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
+.sh .upload-label { display: flex; align-items: center; gap: 10px; background: var(--white); border: 1px solid var(--border); padding: 13px 18px; cursor: pointer; font-size: 13px; color: #bbb; flex: 1; transition: border-color .18s; }
+.sh .upload-label:hover { border-color: var(--gold); }
+.sh .upload-label svg { color: var(--gold); }
+.sh .fsub { background: var(--black); color: #fff; font-size: 13px; font-weight: 600; border: none; padding: 13px 36px; cursor: pointer; letter-spacing: .06em; text-transform: uppercase; transition: background .18s; white-space: nowrap; }
+.sh .fsub:hover { background: var(--gold); }
+.sh .fsub.done { background: #16a34a; }
+
+/* ── FOOTER ── */
+.sh .footer { background: var(--black); padding: 64px 56px 24px; }
+.sh .ft-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; padding-bottom: 48px; border-bottom: 1px solid rgba(255, 255, 255, .08); }
+.sh .ft-logo img { height: 38px; filter: invert(1) brightness(2); object-fit: contain; margin-bottom: 8px; }
+.sh .ft-logo-fb { font-family: var(--font-playfair), "Playfair Display", serif; font-size: 28px; font-weight: 700; color: #fff; letter-spacing: .04em; margin-bottom: 6px; }
+.sh .ft-logo-fb span { display: block; width: 40px; height: 1.5px; background: var(--gold); margin-top: 4px; }
+.sh .ft-tagline { font-size: 9.5px; text-transform: uppercase; letter-spacing: .22em; color: rgba(255, 255, 255, .25); margin-bottom: 12px; }
+.sh .ft-desc { font-size: 12px; color: rgba(255, 255, 255, .38); line-height: 1.78; margin-bottom: 18px; font-weight: 300; }
+.sh .ft-socs { display: flex; gap: 8px; }
+.sh .ft-soc { width: 34px; height: 34px; border: 1px solid rgba(255, 255, 255, .12); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .18s; }
+.sh .ft-soc:hover { background: var(--gold); border-color: var(--gold); }
+.sh .ft-soc svg { color: rgba(255, 255, 255, .45); transition: color .18s; }
+.sh .ft-soc:hover svg { color: #fff; }
+.sh .ft-ct { font-size: 10px; text-transform: uppercase; letter-spacing: .18em; color: var(--gold); font-weight: 600; margin-bottom: 16px; }
+.sh .ft-lk { font-size: 12px; color: rgba(255, 255, 255, .38); display: block; margin-bottom: 10px; cursor: pointer; transition: color .18s; font-weight: 300; }
+.sh .ft-lk:hover { color: #fff; }
+.sh .ft-addr { font-size: 12px; color: rgba(255, 255, 255, .38); line-height: 1.78; font-weight: 300; }
+.sh .ft-map { border: 1px solid rgba(255, 255, 255, .1); padding: 12px 15px; margin-top: 14px; display: flex; align-items: center; gap: 10px; }
+.sh .ft-map svg { color: var(--gold); flex-shrink: 0; }
+.sh .ft-map span { font-size: 11px; color: rgba(255, 255, 255, .32); }
+.sh .ft-bot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.sh .ft-copy { font-size: 11px; color: rgba(255, 255, 255, .22); letter-spacing: .03em; }
+.sh .ft-pols { display: flex; gap: 20px; flex-wrap: wrap; }
+.sh .ft-pol { font-size: 11px; color: rgba(255, 255, 255, .22); cursor: pointer; transition: color .18s; letter-spacing: .03em; }
+.sh .ft-pol:hover { color: rgba(255, 255, 255, .7); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  .sh .nav, .sh .sec, .sh .trust, .sh .deal-wrap, .sh .contact, .sh .footer { padding-left: 32px; padding-right: 32px; }
+  .sh .hero-content { padding: 0 40px; }
+  .sh .hero-h1 { font-size: 50px; }
+  .sh .hero-sale { padding-left: 32px; padding-right: 32px; }
+}
+@media (max-width: 900px) {
+  .sh .nav-links { display: none; }
+  .sh .cat-grid { grid-template-columns: repeat(3, 1fr); }
+  .sh .prod-g { grid-template-columns: repeat(3, 1fr); }
+  .sh .testi-g { grid-template-columns: repeat(2, 1fr); }
+  .sh .blog-g { grid-template-columns: repeat(2, 1fr); }
+  .sh .deal { grid-template-columns: 1fr; }
+  .sh .deal-r { height: 220px; }
+  .sh .ft-top { grid-template-columns: 1fr 1fr; }
+  .sh .trust-g { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .sh .nav, .sh .sec, .sh .trust, .sh .deal-wrap, .sh .contact, .sh .footer { padding-left: 20px; padding-right: 20px; }
+  .sh .hero { height: 500px; }
+  .sh .hero-content { padding: 0 24px; }
+  .sh .hero-h1 { font-size: 38px; }
+  .sh .hero-btns { flex-direction: column; gap: 10px; }
+  .sh .hero-stats { gap: 20px; }
+  .sh .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  .sh .feat-g { grid-template-columns: 1fr; }
+  .sh .prod-g { grid-template-columns: repeat(2, 1fr); }
+  .sh .testi-g { grid-template-columns: 1fr; }
+  .sh .blog-g { grid-template-columns: 1fr; }
+  .sh .ft-top { grid-template-columns: 1fr; }
+  .sh .contact-grid { grid-template-columns: 1fr; }
+  .sh .hero-sale { flex-direction: column; gap: 4px; align-items: flex-start; padding: 10px 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sh .mq-track { animation: none; }
+  .sh * { transition-duration: .01ms !important; }
+}

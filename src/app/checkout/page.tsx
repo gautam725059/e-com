@@ -1,134 +1,103 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useCart } from "@/context/CartContext";
-import { useRequireLogin } from "@/hooks/useRequireLogin";
-import { CHECKOUT_KEY } from "@/lib/checkout";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import Link from "next/link";
+import StoreLayout from "@/components/layout/StoreLayout";
+import { useStore } from "@/context/StoreContext";
 
-export default function AddressPage() {
-  const { allowed } = useRequireLogin("/checkout");
-  const { items, totalPrice } = useCart();
+export default function CheckoutPage() {
+  const { state, dispatch, cartTotal } = useStore();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const [form, setForm] = useState({
-    customer_name: "",
-    phone: "",
-    email: "",
-    address: "",
-    city: "",
-    state: "",
-    pincode: "",
-  });
+  const shipping = cartTotal >= 1000 ? 0 : 50;
+  const total = cartTotal + shipping;
 
-  // Prefill from previous data / login details.
-  useEffect(() => {
-    try {
-      const saved = sessionStorage.getItem(CHECKOUT_KEY);
-      if (saved) {
-        setForm((f) => ({ ...f, ...JSON.parse(saved) }));
-        return;
-      }
-    } catch {}
-    setForm((f) => ({
-      ...f,
-      customer_name: localStorage.getItem("userName") || "",
-      phone: localStorage.getItem("userMobile") || "",
-    }));
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const continueToPayment = (e: React.FormEvent) => {
+  const placeOrder = (e: React.FormEvent) => {
     e.preventDefault();
-    sessionStorage.setItem(CHECKOUT_KEY, JSON.stringify(form));
-    router.push("/checkout/payment");
+    setLoading(true);
+    setTimeout(() => {
+      dispatch({ type: "CLEAR_CART" });
+      router.push("/order-success");
+    }, 600);
   };
-
-  if (!allowed) {
-    return (
-      <>
-        <Navbar />
-        <main className="max-w-4xl mx-auto px-6 py-24 text-center text-gray-500">Loading…</main>
-      </>
-    );
-  }
-
-  if (items.length === 0) {
-    return (
-      <>
-        <Navbar />
-        <main className="max-w-4xl mx-auto px-6 py-20 text-center">
-          <h1 className="text-2xl font-semibold mb-4">Your cart is empty</h1>
-          <button onClick={() => router.push("/products")} className="bg-navy-700 text-white px-6 py-3 rounded-lg">
-            Browse Products
-          </button>
-        </main>
-        <Footer />
-      </>
-    );
-  }
 
   return (
-    <>
-      <Navbar />
-      <main className="max-w-7xl mx-auto px-6 py-10">
-        {/* Step indicator */}
-        <div className="flex items-center gap-3 text-sm mb-8">
-          <span className="font-semibold text-navy-700">1. Address</span>
-          <span className="text-gray-300">→</span>
-          <span className="text-gray-400">2. Payment</span>
+    <StoreLayout>
+      <main className="page">
+        <div className="crumb">
+          <Link href="/">Home</Link> / <Link href="/cart">Cart</Link> /{" "}
+          <span className="cur">Checkout</span>
         </div>
+        <h1 className="page-h1">Checkout</h1>
 
-        <h1 className="text-3xl font-bold mb-8">Shipping Address</h1>
-
-        <form onSubmit={continueToPayment} className="grid lg:grid-cols-2 gap-10">
-          <div className="border rounded-2xl p-6 space-y-4">
-            <input name="customer_name" required value={form.customer_name} placeholder="Full Name" onChange={handleChange} className="w-full border rounded-lg px-4 py-3" />
-            <input name="phone" required value={form.phone} placeholder="Phone Number" onChange={handleChange} className="w-full border rounded-lg px-4 py-3" />
-            <input name="email" type="email" value={form.email} placeholder="Email (optional)" onChange={handleChange} className="w-full border rounded-lg px-4 py-3" />
-            <input name="address" required value={form.address} placeholder="Address" onChange={handleChange} className="w-full border rounded-lg px-4 py-3" />
-            <div className="grid grid-cols-2 gap-4">
-              <input name="city" required value={form.city} placeholder="City" onChange={handleChange} className="w-full border rounded-lg px-4 py-3" />
-              <input name="state" required value={form.state} placeholder="State" onChange={handleChange} className="w-full border rounded-lg px-4 py-3" />
-            </div>
-            <input name="pincode" required value={form.pincode} placeholder="Pincode" onChange={handleChange} className="w-full border rounded-lg px-4 py-3" />
+        {state.cart.length === 0 ? (
+          <div className="empty-state">
+            <h2>Your cart is empty</h2>
+            <p>Add some products before checking out.</p>
+            <Link
+              href="/products"
+              className="drawer-btn"
+              style={{ display: "inline-block", width: "auto", padding: "14px 30px" }}
+            >
+              Start Shopping
+            </Link>
           </div>
-
-          {/* Order summary */}
-          <div className="border rounded-2xl p-6 h-fit">
-            <h2 className="text-xl font-semibold mb-5">Order Summary</h2>
-            {items.map((item) => (
-              <div key={item.id} className="flex justify-between mb-3">
-                <span>{item.title} × {item.quantity}</span>
-                <span>₹{item.price * item.quantity}</span>
+        ) : (
+          <form className="co-grid" style={{ marginTop: 20 }} onSubmit={placeOrder}>
+            <div className="co-card">
+              <h3>Shipping Details</h3>
+              <div style={{ display: "grid", gap: 12 }}>
+                <input className="finput" required placeholder="Full Name" />
+                <input className="finput" required placeholder="Phone Number" type="tel" />
+                <input className="finput" placeholder="Email (optional)" type="email" />
+                <input className="finput" required placeholder="Address" />
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <input className="finput" required placeholder="City" />
+                  <input className="finput" required placeholder="State" />
+                </div>
+                <input className="finput" required placeholder="Pincode" />
               </div>
-            ))}
-            <hr className="my-4" />
-            <div className="flex justify-between">
-              <span>Subtotal</span>
-              <span>₹{totalPrice}</span>
-            </div>
-            <div className="flex justify-between mt-2">
-              <span>Shipping</span>
-              <span>₹50</span>
-            </div>
-            <div className="flex justify-between mt-4 font-bold text-xl">
-              <span>Total</span>
-              <span>₹{totalPrice + 50}</span>
+              <p style={{ fontSize: 12, color: "var(--grey)", marginTop: 14 }}>
+                Payment: Cash on Delivery (COD)
+              </p>
             </div>
 
-            <button type="submit" className="w-full mt-6 bg-navy-700 hover:bg-navy-800 text-white py-3 rounded-lg font-medium">
-              Continue to Payment
-            </button>
-          </div>
-        </form>
+            <div className="co-card">
+              <h3>Order Summary</h3>
+              {state.cart.map((i) => (
+                <div className="co-line" key={i.product.id}>
+                  <span>
+                    {i.product.name} × {i.qty}
+                  </span>
+                  <span>₹{i.product.price * i.qty}</span>
+                </div>
+              ))}
+              <div className="co-sum-row" style={{ marginTop: 12 }}>
+                <span>Subtotal</span>
+                <span>₹{cartTotal}</span>
+              </div>
+              <div className="co-sum-row">
+                <span>Shipping</span>
+                <span>{shipping === 0 ? "Free" : `₹${shipping}`}</span>
+              </div>
+              <div className="co-sum-row total">
+                <span>Total</span>
+                <b>₹{total}</b>
+              </div>
+              <button
+                type="submit"
+                className="drawer-btn"
+                style={{ marginTop: 14 }}
+                disabled={loading}
+              >
+                {loading ? "Placing Order…" : "Place Order"}
+              </button>
+            </div>
+          </form>
+        )}
       </main>
-      <Footer />
-    </>
+    </StoreLayout>
   );
 }

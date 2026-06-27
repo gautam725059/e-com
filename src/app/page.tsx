@@ -1,31 +1,28 @@
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
-import Footer from "@/components/Footer";
-import FeaturedProducts from "@/components/FeaturedProducts";
-import Promotion from "@/components/Promotion";
-import WhatWeOffer from "@/components/WhatWeOffer";
-import TrendingProducts from "@/components/TrendingProducts";
-import DiscountItems from "@/components/DiscountItems";
-import TopCategories from "@/components/TopCategories";
-import LatestBlog from "@/components/LatestBlog";
-import ContactForm from "@/components/ContactForm";
+import StoreLayout from "@/components/layout/StoreLayout";
+import HeroSection from "@/components/home/HeroSection";
+import MarqueeBar from "@/components/home/MarqueeBar";
+import CategorySection from "@/components/home/CategorySection";
+import TrustBar from "@/components/home/TrustBar";
+import FeaturedProducts from "@/components/home/FeaturedProducts";
+import TrendingProducts from "@/components/home/TrendingProducts";
+import DealOfDay from "@/components/home/DealOfDay";
+import Testimonials from "@/components/home/Testimonials";
+import BlogSection from "@/components/home/BlogSection";
+import ContactSection from "@/components/home/ContactSection";
 
 export default function Home() {
   return (
-    <>
-      <Navbar />
-      <Hero />
-      <Promotion />
-      <TopCategories />
-      <main className="bg-white">
-        <FeaturedProducts />
-        <DiscountItems />
-        <TrendingProducts />
-        <WhatWeOffer />
-        <LatestBlog />
-      </main>
-      <ContactForm/>
-      <Footer />
-    </>
+    <StoreLayout>
+      <HeroSection />
+      <MarqueeBar />
+      <CategorySection />
+      <TrustBar />
+      <FeaturedProducts />
+      <TrendingProducts />
+      <DealOfDay />
+      <Testimonials />
+      <BlogSection />
+      <ContactSection />
+    </StoreLayout>
   );
 }

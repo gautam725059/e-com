@@ -12,6 +12,7 @@ export default function ProductDetailClient({ product, imageMap, products }: any
 
   const originalPrice = Math.round(product.price * 1.25);
   const salePrice = product.price;
+  const discountPct = Math.round((1 - salePrice / originalPrice) * 100);
   const router = useRouter();
   const { addItem } = useCart();
 
@@ -57,7 +58,7 @@ export default function ProductDetailClient({ product, imageMap, products }: any
         <div className="mt-4 flex items-baseline gap-4">
           <div className="text-3xl font-extrabold text-navy-700">₹{salePrice}</div>
           <div className="text-sm text-gray-500 line-through">₹{originalPrice}</div>
-          <div className="text-sm text-red-500">18% off</div>
+          <div className="text-sm text-red-500">{discountPct}% off</div>
         </div>
 
         <p className="mt-3 text-sm text-navy-700">Inclusive of all taxes</p>
@@ -118,14 +119,16 @@ export default function ProductDetailClient({ product, imageMap, products }: any
       </aside>
 
       <section className="lg:col-span-12 mt-12">
-        <h2 className="text-2xl font-semibold mb-4">Related products</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-          {products.filter((p: any) => p.id !== product.id).slice(0, 3).map((p: any) => (
-            <Link key={p.id} href={`/products/${p.id}`} className="block border rounded-lg overflow-hidden">
-              <img src={imageMap[p.image] ?? p.image} alt={p.title} className="w-full h-32 object-cover" />
-              <div className="p-3">
-                <div className="font-medium">{p.title}</div>
-                <div className="text-sm text-navy-700">₹{p.price}</div>
+        <h2 className="text-2xl font-semibold mb-4">You May Also Like</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {products.filter((p: any) => p.id !== product.id).slice(0, 4).map((p: any) => (
+            <Link key={p.id} href={`/products/${p.id}`} className="group block bg-white border rounded-xl overflow-hidden hover:shadow-lg transition">
+              <div className="aspect-square overflow-hidden">
+                <img src={imageMap[p.image] ?? p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+              </div>
+              <div className="p-4">
+                <div className="font-medium text-gray-800 line-clamp-1">{p.title}</div>
+                <div className="mt-1 font-semibold text-navy-700">₹{p.price}</div>
               </div>
             </Link>
           ))}

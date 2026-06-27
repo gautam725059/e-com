@@ -1,19 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
-import { CartProvider } from "@/context/CartContext";
-import WhatsAppButton from "@/components/WhatsAppButton";
-import { Toaster } from "react-hot-toast";
-import Script from "next/script";
+import "./home-v3.css";
+import "./store.css";
+import { StoreProvider } from "@/context/StoreContext";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
   subsets: ["latin"],
+  style: ["normal", "italic"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -31,25 +33,10 @@ export default function RootLayout({
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${playfair.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-screen flex flex-col">
-        <CartProvider>
-          {children}
-
-          <WhatsAppButton />
-
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 2500,
-            }}
-          />
-        </CartProvider>
-        <Script
-          src="https://checkout.razorpay.com/v1/checkout.js"
-          strategy="beforeInteractive"
-        />
+      <body className="min-h-screen">
+        <StoreProvider>{children}</StoreProvider>
       </body>
     </html>
   );
