@@ -29,7 +29,7 @@ export const TESTIMONIALS = [
 export const HERO_IMAGE =
   "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1400&q=85";
 export const WHATSAPP_LINK =
-  "https://wa.me/919999999999?text=Hi%20I%20need%20help%20with%20an%20order";
+  "https://wa.me/919818701724?text=Hi%20I%20need%20help%20with%20an%20order";
 
 export const slugify = (s: string) =>
   s.toLowerCase().trim().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
