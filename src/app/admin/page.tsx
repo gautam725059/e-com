@@ -48,6 +48,9 @@ const getImgUrl = (img: string) => {
   return imageMap[img] || `/images/${img}`;
 };
 
+const ORDER_STATUS_FLOW = ["placed", "confirmed", "shipped", "delivered", "cancelled"];
+const titleCase = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+
 // Build revenue-per-day for the last 7 days from live orders.
 function buildSalesSeries(orders: any[]): { label: string; val: number }[] {
   const today = new Date();
@@ -92,6 +95,7 @@ export default function AdminPage() {
   const [authorized, setAuthorized] = useState(false);
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState('admin');
+  const [adminPass, setAdminPass] = useState("");
   const [message, setMessage] = useState("");
 
   // Product states
@@ -145,64 +149,82 @@ export default function AdminPage() {
   useEffect(() => {
     try {
       const auth = sessionStorage.getItem('adminAuth');
-      if (auth === 'true') setAuthorized(true);
+      const p = sessionStorage.getItem('adminPass');
+      // Only treat as logged-in if we also have the password (needed for the
+      // admin API). Old sessions without it must log in again.
+      if (auth === 'true' && p) {
+        setAuthorized(true);
+        setAdminPass(p);
+      } else {
+        sessionStorage.removeItem('adminAuth');
+        sessionStorage.removeItem('adminPass');
+      }
     } catch (e) {}
   }, []);
 
-  // Fetch live orders from Supabase
+  // Fetch live orders from Supabase via the service-role admin API
   useEffect(() => {
     async function fetchOrders() {
       try {
         setLoadingOrders(true);
-        const { data, error } = await supabase
-          .from("orders")
-          .select("*")
-          .order("id", { ascending: false });
-        if (error) throw error;
-        // Map live website orders to the admin schema
-        const mapped = (data || []).map((order: any) => {
-          const ps = (order.payment_status || "pending").toLowerCase();
-          const status =
-            order.status ||
-            (ps === "paid" ? "Delivered" : ps === "cancelled" ? "Cancelled" : "Processing");
-          return {
-            id: order.id,
-            customer_name: order.customer_name || "Unknown Customer",
-            phone: order.phone || "",
-            email: order.email || "",
-            total_amount: order.total_amount || 0,
-            payment_method: order.payment_method?.toUpperCase() || "COD",
-            payment_status: ps,
-            status,
-            created_ts: order.created_at || null,
-            created_at: new Date(order.created_at || Date.now()).toLocaleDateString('en-GB', {
-              day: '2-digit', month: 'short', year: 'numeric'
-            })
-          };
-        });
+        const res = await fetch("/api/admin/orders", { headers: { "x-admin-pass": adminPass } });
+        if (!res.ok) {
+          const e = await res.json().catch(() => ({}));
+          console.error("admin orders fetch failed:", e);
+          setMessage(
+            res.status === 401
+              ? "Session expired — please log in again."
+              : `Could not load orders${e.error ? ": " + e.error : ""}. Set SUPABASE_SERVICE_ROLE_KEY.`
+          );
+          setOrders([]);
+          return;
+        }
+        const { orders: rows } = await res.json();
+        const mapped = (rows || []).map((o: any) => ({
+          id: o.order_number,
+          order_number: o.order_number,
+          customer_name: o.customer_name || "Unknown Customer",
+          phone: o.phone || "",
+          email: o.email || "",
+          address: o.address || "",
+          city: o.city || "",
+          state: o.state || "",
+          pincode: o.pincode || "",
+          items: Array.isArray(o.items) ? o.items : [],
+          total_amount: o.total || 0,
+          subtotal: o.subtotal || 0,
+          shipping: o.shipping || 0,
+          payment_method: (o.payment_method || "cod").toUpperCase(),
+          payment_status: o.payment_method === "cod" ? "pending" : "paid",
+          status: titleCase(o.status || "placed"),
+          rawStatus: o.status || "placed",
+          created_ts: o.created_at || null,
+          created_at: new Date(o.created_at || Date.now()).toLocaleDateString("en-GB", {
+            day: "2-digit", month: "short", year: "numeric",
+          }),
+        }));
         setOrders(mapped);
 
-        // Aggregate units sold per product from order_items
-        const { data: itemsData } = await supabase
-          .from("order_items")
-          .select("product_id, quantity");
+        // Units sold per product, aggregated from each order's items JSON
         const sold: Record<number, number> = {};
-        (itemsData || []).forEach((it: any) => {
-          if (it.product_id == null) return;
-          sold[it.product_id] = (sold[it.product_id] || 0) + (it.quantity || 0);
-        });
+        mapped.forEach((o: any) =>
+          o.items.forEach((it: any) => {
+            if (it.id == null) return;
+            sold[it.id] = (sold[it.id] || 0) + (it.qty || 0);
+          })
+        );
         setSoldByProduct(sold);
       } catch (e) {
-        console.error("Failed to query Supabase orders:", e);
+        console.error("Failed to query orders:", e);
         setOrders([]);
       } finally {
         setLoadingOrders(false);
       }
     }
-    if (authorized) {
+    if (authorized && adminPass) {
       fetchOrders();
     }
-  }, [authorized]);
+  }, [authorized, adminPass]);
 
   // Sync edit form with selection
   useEffect(() => {
@@ -356,6 +378,8 @@ export default function AdminPage() {
       });
       if (!r.ok) return setMessage('Invalid username or password');
       sessionStorage.setItem('adminAuth', 'true');
+      sessionStorage.setItem('adminPass', password);
+      setAdminPass(password);
       setAuthorized(true);
       setMessage('Access granted');
       setTimeout(() => setMessage(''), 2000);
@@ -367,9 +391,147 @@ export default function AdminPage() {
   // Logout action
   function handleLogout() {
     sessionStorage.removeItem('adminAuth');
+    sessionStorage.removeItem('adminPass');
     setAuthorized(false);
+    setAdminPass('');
     setPassword('');
     setMessage('Logged out');
+  }
+
+  // Change an order's status (placed → confirmed → shipped → delivered / cancelled)
+  async function handleUpdateOrderStatus(orderNumber: string, newStatus: string) {
+    try {
+      const r = await fetch('/api/admin/orders', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-admin-pass': adminPass },
+        body: JSON.stringify({ order_number: orderNumber, status: newStatus }),
+      });
+      if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'Update failed');
+      setOrders(prev => prev.map(o =>
+        o.order_number === orderNumber ? { ...o, status: titleCase(newStatus), rawStatus: newStatus } : o
+      ));
+      setMessage(`Order ${orderNumber} marked ${newStatus}`);
+      setTimeout(() => setMessage(''), 2500);
+    } catch (err: any) {
+      setMessage(String(err.message || err));
+    }
+  }
+
+  // Open a printable invoice / bill for an order in a new window
+  function openInvoice(order: any) {
+    const w = window.open('', '_blank', 'width=900,height=1000');
+    if (!w) { setMessage('Allow pop-ups to print the invoice.'); return; }
+    const inr = (n: number) => '₹' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const rows = (order.items || []).map((it: any) => `
+      <tr>
+        <td class="i-name">${it.name}${it.variant ? `<span class="i-sub">${it.variant}${it.color ? ' · ' + it.color : ''}</span>` : ''}</td>
+        <td class="c">${String(it.qty).padStart(2, '0')}<span class="i-sub">qty</span></td>
+        <td class="r">${inr(it.price)}<span class="i-sub">per unit</span></td>
+        <td class="c">0.00</td>
+        <td class="r">${inr(it.price * it.qty)}</td>
+      </tr>`).join('');
+
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Invoice ${order.order_number}</title>
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',Arial,sans-serif;color:#1A1A1A;background:#f3ece1;padding:32px}
+        .inv{max-width:760px;margin:0 auto;background:#fff;padding:44px 46px;box-shadow:0 10px 40px rgba(0,0,0,.08)}
+        .top{display:flex;justify-content:space-between;align-items:flex-start}
+        .brand-name{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;letter-spacing:1px;line-height:1}
+        .brand-ul{display:block;height:3px;width:90px;background:linear-gradient(90deg,#B8963E,transparent);margin-top:4px}
+        .brand-sub{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#8a8275;margin-top:8px}
+        .banner{display:flex;align-items:center;background:#1A1A1A;color:#fff;padding:14px 26px}
+        .banner i{display:inline-block;width:4px;height:26px;background:#B8963E;margin-right:4px}
+        .banner i:nth-child(2){opacity:.6}
+        .banner b{font-size:30px;font-weight:700;letter-spacing:7px;margin-left:12px}
+        .meta{margin-top:18px;font-size:13px;line-height:1.7}
+        .meta b{font-weight:700}
+        .rule{border:0;border-top:1px solid #B8963E;opacity:.5;margin:18px 0}
+        .cols{display:flex;justify-content:space-between;gap:40px;font-size:13px;line-height:1.7}
+        .cols h4{font-size:12px;font-weight:700;margin-bottom:4px}
+        .cols .muted{color:#6b6357}
+        table{width:100%;border-collapse:collapse;margin-top:6px}
+        thead th{text-align:left;font-size:13px;font-weight:700;padding:12px 8px;border-bottom:2px solid #1A1A1A}
+        thead th.c{text-align:center}thead th.r{text-align:right}
+        tbody td{padding:16px 8px;border-bottom:1px solid #ece3d4;font-size:14px;vertical-align:top}
+        td.c{text-align:center}td.r{text-align:right}
+        .i-name{font-weight:500}
+        .i-sub{display:block;font-size:11px;color:#9a9082;font-weight:400;margin-top:2px}
+        .foot{display:flex;justify-content:space-between;margin-top:22px;gap:30px}
+        .terms{font-size:11px;color:#9a9082;max-width:260px;line-height:1.7}
+        .terms h4{font-size:12px;color:#1A1A1A;margin-bottom:6px}
+        .totals{width:280px}
+        .totals .row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0}
+        .totals .row .lbl{color:#6b6357}
+        .total-bar{display:flex;justify-content:space-between;align-items:center;background:#1A1A1A;color:#fff;margin-top:12px;padding:14px 18px}
+        .total-bar .t1{font-family:'Playfair Display',serif;font-size:18px}
+        .total-bar .t2{font-family:'Playfair Display',serif;font-size:22px;font-weight:700}
+        .thanks{text-align:center;margin-top:30px;font-size:11px;color:#9a9082;border-top:1px solid #ece3d4;padding-top:14px}
+        @media print{body{background:#fff;padding:0}.inv{box-shadow:none}}
+      </style></head><body>
+      <div class="inv">
+        <div class="top">
+          <div>
+            <div class="brand-name">Shanya<span class="brand-ul"></span></div>
+            <div class="brand-sub">Hair Accessories &amp; Home Essentials</div>
+          </div>
+          <div class="banner"><i></i><i></i><b>INVOICE</b></div>
+        </div>
+
+        <div class="meta">
+          <b>Invoice No:</b> ${order.order_number}<br>
+          <b>Date:</b> ${order.created_at}<br>
+          <b>Status:</b> ${order.status}
+        </div>
+
+        <hr class="rule">
+
+        <div class="cols">
+          <div>
+            <h4>Bill From:</h4>
+            <div>Shanya by Tejswi Impex Pvt. Ltd.</div>
+            <div class="muted">Plot No. 44, Sector 44,<br>Gurgaon, Haryana, India</div>
+            <div class="muted">+91 98187 01724</div>
+          </div>
+          <div>
+            <h4>Bill To:</h4>
+            <div>${order.customer_name}</div>
+            <div class="muted">${order.address || ''}${order.city ? ', ' + order.city : ''}<br>${order.state ? order.state : ''}${order.pincode ? ' - ' + order.pincode : ''}</div>
+            <div class="muted">${order.phone || ''}${order.email ? ' · ' + order.email : ''}</div>
+          </div>
+        </div>
+
+        <hr class="rule">
+
+        <table>
+          <thead><tr>
+            <th>Item</th><th class="c">Quantity</th><th class="r">Rate</th><th class="c">Tax</th><th class="r">Amount</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+
+        <div class="foot">
+          <div class="terms">
+            <h4>Terms &amp; Conditions:</h4>
+            Payment Method: ${String(order.payment_method || 'COD').toUpperCase()}.
+            Goods once sold are subject to our 7-day return policy.
+            Thank you for shopping with Shanya.
+          </div>
+          <div class="totals">
+            <div class="row"><span class="lbl">Subtotal</span><span>${inr(order.subtotal)}</span></div>
+            <div class="row"><span class="lbl">Shipping</span><span>${order.shipping === 0 ? 'Free' : inr(order.shipping)}</span></div>
+            <div class="row"><span class="lbl">Discount</span><span>${inr(0)}</span></div>
+            <div class="row"><span class="lbl">Tax</span><span>${inr(0)}</span></div>
+            <div class="total-bar"><span class="t1">Total</span><span class="t2">${inr(order.total_amount)}</span></div>
+          </div>
+        </div>
+
+        <div class="thanks">www.shanya.in · This is a computer-generated invoice and does not require a signature.</div>
+      </div>
+      <script>window.onload=function(){window.print()}</script>
+      </body></html>`);
+    w.document.close();
   }
 
   // Live stats computed entirely from website data (Supabase orders + catalog)
@@ -739,9 +901,9 @@ export default function AdminPage() {
                             <td className="py-3 px-2">
                               <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                                 order.status === "Delivered" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                                order.status === "Processing" ? "bg-sky-50 text-sky-700 border-sky-200" :
                                 order.status === "Shipped" ? "bg-amber-50 text-amber-700 border-amber-200" :
-                                "bg-rose-50 text-rose-700 border-rose-200"
+                                order.status === "Cancelled" ? "bg-rose-50 text-rose-700 border-rose-200" :
+                                "bg-sky-50 text-sky-700 border-sky-200"
                               }`}>
                                 {order.status}
                               </span>
@@ -808,49 +970,68 @@ export default function AdminPage() {
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
                     <tr className="border-b border-gray-100 text-gray-400 font-bold uppercase tracking-wider bg-gray-50/50">
-                      <th className="py-3 px-4">Order ID</th>
+                      <th className="py-3 px-4">Order No</th>
                       <th className="py-3 px-4">Customer</th>
-                      <th className="py-3 px-4">Total Amount</th>
-                      <th className="py-3 px-4">Payment Method</th>
-                      <th className="py-3 px-4">Payment Status</th>
-                      <th className="py-3 px-4">Log Status</th>
+                      <th className="py-3 px-4">Items</th>
+                      <th className="py-3 px-4">Amount</th>
+                      <th className="py-3 px-4">Payment</th>
+                      <th className="py-3 px-4">Status</th>
                       <th className="py-3 px-4">Date</th>
+                      <th className="py-3 px-4 text-center">Bill</th>
                     </tr>
                   </thead>
                   <tbody>
                     {orders.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="py-10 text-center text-gray-400 font-medium">
+                        <td colSpan={8} className="py-10 text-center text-gray-400 font-medium">
                           {loadingOrders ? "Loading orders…" : "No orders found in the database yet."}
                         </td>
                       </tr>
                     )}
                     {orders.map((order) => (
-                      <tr key={order.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition">
-                        <td className="py-4 px-4 font-bold text-gray-900">#ORD-{order.id}</td>
-                        <td className="py-4 px-4 font-semibold text-gray-700">{order.customer_name}</td>
+                      <tr key={order.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition align-top">
+                        <td className="py-4 px-4 font-bold text-gray-900">{order.order_number}</td>
+                        <td className="py-4 px-4">
+                          <div className="font-semibold text-gray-800">{order.customer_name}</div>
+                          <div className="text-[10px] text-gray-400">{order.phone}{order.city ? ` · ${order.city}` : ""}</div>
+                        </td>
+                        <td className="py-4 px-4 text-gray-500 max-w-[180px]">
+                          <div className="font-semibold text-gray-700">
+                            {order.items.reduce((s: number, i: any) => s + (i.qty || 0), 0)} items
+                          </div>
+                          <div className="text-[10px] text-gray-400 line-clamp-2">
+                            {order.items.map((i: any) => `${i.name}×${i.qty}`).join(", ")}
+                          </div>
+                        </td>
                         <td className="py-4 px-4 font-bold text-gray-900">₹{order.total_amount?.toLocaleString()}</td>
-                        <td className="py-4 px-4 text-gray-500 font-medium uppercase">{order.payment_method}</td>
+                        <td className="py-4 px-4 text-gray-500 font-medium uppercase text-[10px]">{order.payment_method}</td>
                         <td className="py-4 px-4">
-                          <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                            order.payment_status === "paid" ? "bg-emerald-100 text-emerald-800" :
-                            order.payment_status === "pending" ? "bg-yellow-100 text-yellow-800" :
-                            "bg-red-100 text-red-800"
-                          }`}>
-                            {order.payment_status}
-                          </span>
+                          <select
+                            value={order.rawStatus}
+                            onChange={(e) => handleUpdateOrderStatus(order.order_number, e.target.value)}
+                            className={`text-[11px] font-bold rounded-full px-2.5 py-1 border focus:outline-none cursor-pointer ${
+                              order.rawStatus === "delivered" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                              order.rawStatus === "shipped" ? "bg-amber-50 text-amber-700 border-amber-200" :
+                              order.rawStatus === "confirmed" ? "bg-sky-50 text-sky-700 border-sky-200" :
+                              order.rawStatus === "cancelled" ? "bg-rose-50 text-rose-700 border-rose-200" :
+                              "bg-gray-100 text-gray-600 border-gray-200"
+                            }`}
+                          >
+                            {ORDER_STATUS_FLOW.map((s) => (
+                              <option key={s} value={s}>{titleCase(s)}</option>
+                            ))}
+                          </select>
                         </td>
-                        <td className="py-4 px-4">
-                          <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                            order.status === "Delivered" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                            order.status === "Processing" ? "bg-sky-50 text-sky-700 border-sky-200" :
-                            order.status === "Shipped" ? "bg-amber-50 text-amber-700 border-amber-200" :
-                            "bg-rose-50 text-rose-700 border-rose-200"
-                          }`}>
-                            {order.status}
-                          </span>
+                        <td className="py-4 px-4 text-gray-400 font-semibold text-[11px]">{order.created_at}</td>
+                        <td className="py-4 px-4 text-center">
+                          <button
+                            onClick={() => openInvoice(order)}
+                            className="inline-flex items-center gap-1 bg-[#111c2a] hover:bg-[#1c2c44] text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg transition"
+                            title="Generate invoice / bill"
+                          >
+                            <CreditCard size={12} /> Invoice
+                          </button>
                         </td>
-                        <td className="py-4 px-4 text-gray-400 font-semibold">{order.created_at}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1494,9 +1675,10 @@ function SalesChart({ points }: { points: { label: string; val: number }[] }) {
 function StatusDonutChart({ counts, total }: { counts: Record<string, number>; total: number }) {
   const C = 2 * Math.PI * 36; // circumference for r=36
   const segDefs = [
-    { key: "Delivered", color: "#10b981" },
-    { key: "Processing", color: "#3b82f6" },
+    { key: "Placed", color: "#94a3b8" },
+    { key: "Confirmed", color: "#3b82f6" },
     { key: "Shipped", color: "#f97316" },
+    { key: "Delivered", color: "#10b981" },
     { key: "Cancelled", color: "#ef4444" },
   ];
 

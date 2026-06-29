@@ -182,7 +182,7 @@ export default function Navbar() {
           </Link>
 
           <Link
-            href="/contact"
+            href="/contact us"
             className="hover:text-gold-500 transition duration-200"
           >
             Contact

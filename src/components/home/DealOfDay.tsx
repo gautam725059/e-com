@@ -32,7 +32,7 @@ export default function DealOfDay() {
           <div className="deal-badge">
             <Zap size={13} /> Deal of the Day
           </div>
-          <div className="deal-title">{p.name} — Kitchen Essential</div>
+          <div className="deal-title">{p.name}</div>
           <div className="deal-sub">{p.desc}</div>
           <div className="deal-pr">
             <span className="deal-now">₹{p.price}</span>

@@ -11,15 +11,15 @@ export default function HeroSection() {
           <Sparkles size={12} />
           New Season Collection
         </div>
-        <p className="hero-pre">Make your home beautiful</p>
+        <p className="hero-pre">Hair Accessories for Every Look</p>
         <h1 className="hero-h1">
-          Curated for
+          Crafted for your
           <br />
-          <em>daily life</em>
+          <em>crowning glory</em>
         </h1>
         <p className="hero-sub">
-          Premium hair accessories, home essentials &amp; kitchen tools —
-          thoughtfully selected for the modern Indian home.
+          Premium claws, scrunchies, bows, headbands &amp; extensions —
+          affordable luxury, thoughtfully designed for the modern Indian woman.
         </p>
         <div className="hero-btns">
           <Link href="/products">
@@ -47,7 +47,7 @@ export default function HeroSection() {
         </div>
       </div>
       <div className="hero-sale">
-        <p>Summer Sale — Up to 40% off on selected home essentials</p>
+        <p>Festive Sale — Up to 40% off on hair accessories</p>
         <Link href="/products">Shop Sale →</Link>
       </div>
     </section>

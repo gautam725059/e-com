@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import Img from "@/components/ui/Img";
 import { CATEGORIES } from "@/lib/data";
 
 export default function CategorySection() {
   return (
-    <section className="sec" id="TopCategories" style={{ background: "var(--white)" }}>
+    <section className="sec" id="TopCategories" style={{ background: "var(--cream)" }}>
       <div className="sec-hd">
         <div>
           <div className="sec-ey">Browse</div>
@@ -17,7 +18,7 @@ export default function CategorySection() {
       <div className="cat-grid">
         {CATEGORIES.map((c) => (
           <Link key={c.name} href={c.href} className="cat-item">
-            <img src={c.img} alt={c.name} loading="lazy" />
+            <Img src={c.img} fallback="/images/clow-clips.avif" alt={c.name} />
             <div className="cat-ov">
               <div className="cat-nm">{c.name}</div>
               <div className="cat-line" />

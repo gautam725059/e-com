@@ -9,8 +9,8 @@ import BrandLogo from "./BrandLogo";
 const LINKS = [
   { label: "Products", href: "/products" },
   { label: "Top Categories", href: "/#TopCategories" },
-  { label: "Blogs", href: "/blogs" },
-  { label: "Contact", href: "/contact" },
+  { label: "Track Order", href: "/track-order" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export default function Navbar() {

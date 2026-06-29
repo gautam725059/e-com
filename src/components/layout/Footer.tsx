@@ -28,10 +28,10 @@ export default function Footer() {
           <div className="ft-logo">
             <BrandLogo footer />
           </div>
-          <div className="ft-tagline">Hair Accessories &amp; Home Essentials</div>
+          <div className="ft-tagline">Premium Hair Accessories</div>
           <div className="ft-desc">
-            Premium kitchen essentials and lifestyle products designed to
-            elevate your everyday living experience across India.
+            Claws, scrunchies, bows, headbands & extensions — affordable luxury
+            hair accessories, thoughtfully designed for Indian women & girls.
           </div>
           <div className="ft-socs">
             <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" className="ft-soc" aria-label="Facebook">

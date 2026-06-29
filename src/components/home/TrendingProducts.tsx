@@ -5,7 +5,7 @@ import { TRENDING } from "@/lib/data";
 
 export default function TrendingProducts() {
   return (
-    <section className="sec" style={{ background: "var(--white)" }}>
+    <section className="sec" style={{ background: "var(--cream)" }}>
       <div className="sec-hd">
         <div>
           <div className="sec-ey">Most Loved</div>

@@ -7,16 +7,17 @@
   --gold-lt: #f7edd8;
   --gold-md: #d4ae6a;
   --gold-dk: #8a6e2a;
-  --black: #0d0d0d;
-  --charcoal: #1c1c1c;
-  --grey: #6b6b6b;
-  --lgrey: #f5f5f5;
+  --black: #1a1a1a;
+  --charcoal: #2a2a2a;
+  --grey: #6b6357;
+  --lgrey: #f3ece1;
   --white: #ffffff;
-  --offwhite: #fafafa;
-  --border: #e8e8e8;
+  --cream: #faf7f2;
+  --offwhite: #f3ece1;
+  --border: #e7ddcd;
   box-sizing: border-box;
   font-family: var(--font-inter), "Inter", sans-serif;
-  background: var(--white);
+  background: var(--cream);
   color: var(--black);
   -webkit-font-smoothing: antialiased;
 }

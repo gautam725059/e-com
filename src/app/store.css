@@ -144,6 +144,30 @@
   .sh .drawer { width: 100%; }
 }
 
+/* ── ORDER SUCCESS / TRACK ORDER ── */
+.sh .ordnum { display: inline-block; background: var(--lgrey); border: 1px dashed var(--gold-md); padding: 10px 18px; font-family: var(--font-playfair), serif; font-weight: 700; letter-spacing: .05em; font-size: 17px; margin: 10px 0 14px; }
+
+.sh .track-form { max-width: 460px; display: grid; gap: 12px; margin-top: 8px; }
+.sh .track-form .drawer-btn { display: inline-flex; align-items: center; justify-content: center; margin-top: 0; }
+
+.sh .track-result { max-width: 640px; border: 1px solid var(--border); margin-top: 32px; }
+.sh .track-head { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; border-bottom: 1px solid var(--border); background: var(--offwhite); }
+.sh .track-no { font-family: var(--font-playfair), serif; font-weight: 700; font-size: 18px; }
+.sh .track-status { font-size: 13px; font-weight: 700; text-transform: capitalize; color: var(--gold-dk); }
+
+/* timeline */
+.sh .tl { display: flex; padding: 30px 24px 10px; }
+.sh .tl-step { flex: 1; text-align: center; position: relative; }
+.sh .tl-step::before { content: ""; position: absolute; top: 16px; left: -50%; width: 100%; height: 2px; background: var(--border); z-index: 0; }
+.sh .tl-step:first-child::before { display: none; }
+.sh .tl-step.done::before { background: var(--gold); }
+.sh .tl-dot { position: relative; z-index: 1; width: 34px; height: 34px; border: 2px solid var(--border); background: #fff; border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: var(--grey); }
+.sh .tl-step.done .tl-dot { background: var(--gold); border-color: var(--gold); color: #fff; }
+.sh .tl-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--grey); }
+.sh .tl-step.done .tl-lbl { color: var(--black); font-weight: 600; }
+
+.sh .track-items { padding: 18px 24px 24px; }
+
 /* ── RESPONSIVE POLISH ── */
 /* Tablet: 2-up featured + let section headers wrap so "View All" never collides */
 @media (max-width: 1024px) {

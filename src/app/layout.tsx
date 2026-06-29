@@ -19,9 +19,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Shanya — Hair Accessories & Home Essentials | India",
+  title: "Shanya — Premium Hair Accessories for Women & Girls | India",
   description:
-    "Shop premium hair accessories, home essentials & kitchen products at Shanya. Free shipping on orders over ₹1000. Easy 30-day returns.",
+    "Shop hair claws & clips, scrunchies, bows, headbands, extensions & more at Shanya. Affordable luxury hair accessories from ₹49. Free shipping & easy returns.",
 };
 
 export default function RootLayout({

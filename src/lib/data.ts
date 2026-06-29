@@ -1,35 +1,67 @@
 import type { Product, Category } from "@/types";
 
-export const PRODUCTS: Product[] = [
-  {id:0, name:'Hooks', cat:'Adhesive Hooks', price:12, orig:null, img:'https://www.shanya.in/images/wall-hooks.avif', fallback:'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=600&q=80', desc:'Heavy-duty adhesive hooks — no drilling required. Holds up to 5kg. Perfect for kitchen, bathroom, bedroom walls. Easy to install and remove without leaving marks.', badge:'', variants:['Small','Medium','Large'], colors:['White','Black'], rating:4.8, reviews:234},
-  {id:1, name:'Claw Clip', cat:'Hair Accessories', price:5, orig:6, img:'https://www.shanya.in/images/clow-clips.avif', fallback:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=80', desc:'Smooth matte resin claw clip — holds all hair types securely without damage or breakage. Lightweight design, strong grip. Available in multiple trendy colours.', badge:'20% Off', variants:['Small','Large'], colors:['Black','Brown','Beige','Pink'], rating:4.9, reviews:512},
-  {id:2, name:'Hair Extensions', cat:'Hair Accessories', price:79, orig:null, img:'https://www.shanya.in/images/hair-extansions.avif', fallback:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=80', desc:'5-piece clip-in straight hair extensions in natural black. Adds volume and length instantly. Heat-resistant synthetic fibres that blend with natural hair.', badge:'New', variants:['14 inch','18 inch','22 inch'], colors:['Natural Black','Dark Brown'], rating:4.6, reviews:187},
-  {id:3, name:'Knife Set', cat:'Kitchen Accessories', price:99, orig:141, img:'https://www.shanya.in/images/knife-set.avif', fallback:'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80', desc:'Professional 5-piece stainless steel knife set with ergonomic non-slip handles. Includes chef knife, bread knife, utility knife, paring knife and magnetic wooden block.', badge:'30% Off', variants:['5-Piece Set','7-Piece Set'], colors:['Black Handle','Wooden Handle'], rating:4.7, reviews:328},
-  {id:4, name:'Key Ring', cat:'Key Chain', price:8, orig:null, img:'https://www.shanya.in/images/key-ring.avif', fallback:'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&q=80', desc:'Sturdy metal key ring with durable clasp. Anti-rust stainless steel construction. Slim profile fits easily in pockets and bags. Set of 3 rings.', badge:'', variants:['Set of 3','Set of 6'], colors:['Silver','Gold','Rose Gold'], rating:4.5, reviews:91},
-  {id:5, name:'Decoration Kit', cat:'Birthday Decorations', price:45, orig:75, img:'https://www.shanya.in/images/decoration-kit.jpg', fallback:'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=80', desc:'Complete birthday decoration kit — includes balloons, streamers, banner, table confetti and star foil balloons. Easy to set up in under 10 minutes.', badge:'40% Off', variants:['Basic Kit','Premium Kit'], colors:['Pink','Blue','Gold','Multicolor'], rating:4.9, reviews:143},
-];
+const U = "https://images.unsplash.com/photo-";
+const F_CLIP = "/images/clow-clips.avif"; // local hair fallback
+const F_EXT = "/images/hair-extansions.avif"; // local hair fallback
+
+// Pool of hair / beauty images (local fallback guarantees nothing breaks)
+const IMG = {
+  a: `${U}1522337360788-8b13dee7a37e?w=700&q=80`,
+  b: `${U}1487412947147-5cebf100ffc2?w=700&q=80`,
+  c: `${U}1519415943484-9fa1873496d4?w=700&q=80`,
+  d: `${U}1492106087820-71f1a00d2b11?w=700&q=80`,
+  e: `${U}1457972729786-0411a3b2b626?w=700&q=80`,
+  f: `${U}1595476108010-b4d1f102b1b1?w=700&q=80`,
+  g: `${U}1503185912284-5271ff81b9a8?w=700&q=80`,
+  h: `${U}1605980776566-0486c3ac7617?w=700&q=80`,
+};
 
 export const CATEGORIES: Category[] = [
-  {name:'Adhesive Hooks', img:'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=400&q=80', href:'/category/adhesive-hooks'},
-  {name:'Hair Accessories', img:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80', href:'/category/hair-accessories'},
-  {name:'Bathroom Accessories', img:'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&q=80', href:'/category/bathroom-accessories'},
-  {name:'Kitchen Accessories', img:'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80', href:'/category/kitchen-accessories'},
-  {name:'Key Chain', img:'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400&q=80', href:'/category/key-chain'},
-  {name:'Birthday Decorations', img:'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=400&q=80', href:'/category/birthday-decorations'},
+  { name: "Hair Claws & Clips", img: IMG.a, href: "/category/hair-claws-and-clips" },
+  { name: "Scrunchies & Bows", img: IMG.c, href: "/category/scrunchies-and-bows" },
+  { name: "Headbands", img: IMG.f, href: "/category/headbands" },
+  { name: "Hair Extensions", img: IMG.e, href: "/category/hair-extensions" },
+  { name: "Rubber Bands", img: IMG.h, href: "/category/rubber-bands" },
+  { name: "Kids Collection", img: IMG.b, href: "/category/kids-collection" },
+  { name: "Combo & Gifts", img: IMG.d, href: "/category/combo-and-gifts" },
+];
+
+export const PRODUCTS: Product[] = [
+  { id: 0, name: "Matte Claw Clip", cat: "Hair Claws & Clips", price: 99, orig: 149, img: F_CLIP, fallback: F_CLIP, desc: "Smooth matte-finish claw clip with a strong grip — holds all hair types securely without snagging or breakage. Lightweight, everyday essential.", badge: "30% Off", variants: ["Small", "Medium", "Large"], colors: ["Black", "Brown", "Beige", "Pink"], rating: 4.9, reviews: 512 },
+  { id: 1, name: "Pearl Hair Clips (Set of 6)", cat: "Hair Claws & Clips", price: 149, orig: null, img: IMG.b, fallback: F_CLIP, desc: "Set of 6 dainty pearl-embellished clips. Add a touch of elegance to any hairstyle — perfect for work, parties or everyday charm.", badge: "New", variants: ["Set of 6"], colors: ["Pearl White", "Gold"], rating: 4.8, reviews: 230 },
+  { id: 2, name: "Mini Claw Clips Set", cat: "Hair Claws & Clips", price: 129, orig: 179, img: F_CLIP, fallback: F_CLIP, desc: "Pack of trendy mini claw clips in assorted colours. Great for half-updos, baby hair and quick everyday styling.", badge: "", variants: ["Set of 8", "Set of 12"], colors: ["Assorted", "Pastel", "Neutral"], rating: 4.7, reviews: 188 },
+
+  { id: 3, name: "Satin Scrunchie Set", cat: "Scrunchies & Bows", price: 199, orig: 299, img: IMG.c, fallback: F_CLIP, desc: "Set of premium satin scrunchies that are gentle on hair and prevent breakage. Soft sheen, perfect for day and night.", badge: "33% Off", variants: ["Set of 3", "Set of 6"], colors: ["Blush", "Champagne", "Black", "Wine"], rating: 4.9, reviews: 401 },
+  { id: 4, name: "Velvet Bow Scrunchie", cat: "Scrunchies & Bows", price: 99, orig: null, img: IMG.d, fallback: F_CLIP, desc: "Plush velvet scrunchie with a feminine bow. Adds instant charm to ponytails and buns.", badge: "", variants: ["Single", "Set of 2"], colors: ["Maroon", "Emerald", "Black"], rating: 4.8, reviews: 276 },
+  { id: 5, name: "Silk Hair Bow Clip", cat: "Scrunchies & Bows", price: 149, orig: null, img: IMG.e, fallback: F_CLIP, desc: "Elegant silk bow on a secure alligator clip. A timeless, graceful accessory for all ages.", badge: "", variants: ["Single"], colors: ["Ivory", "Blush", "Black"], rating: 4.7, reviews: 142 },
+
+  { id: 6, name: "Knotted Headband", cat: "Headbands", price: 149, orig: null, img: IMG.f, fallback: F_EXT, desc: "Soft stretch knotted headband that stays put all day. Chic, comfortable and pairs with every outfit.", badge: "", variants: ["Free Size"], colors: ["Black", "Beige", "Mustard", "Rust"], rating: 4.8, reviews: 213 },
+  { id: 7, name: "Pearl Embellished Headband", cat: "Headbands", price: 249, orig: 349, img: IMG.g, fallback: F_EXT, desc: "Statement headband adorned with pearls — instant glam for festive looks and celebrations.", badge: "Sale", variants: ["Free Size"], colors: ["Pearl White", "Gold"], rating: 4.9, reviews: 167 },
+
+  { id: 8, name: "Clip-in Hair Extensions", cat: "Hair Extensions", price: 499, orig: 699, img: F_EXT, fallback: F_EXT, desc: "5-piece clip-in straight extensions for instant length & volume. Heat-resistant fibres that blend naturally with your hair.", badge: "Bestseller", variants: ["14 inch", "18 inch", "22 inch"], colors: ["Natural Black", "Dark Brown"], rating: 4.7, reviews: 328 },
+  { id: 9, name: "Wavy Ponytail Extension", cat: "Hair Extensions", price: 399, orig: 549, img: F_EXT, fallback: F_EXT, desc: "Clip-on wavy ponytail for a fuller, glamorous look in seconds. Lightweight and secure.", badge: "", variants: ["16 inch", "20 inch"], colors: ["Natural Black", "Brown"], rating: 4.6, reviews: 154 },
+
+  { id: 10, name: "Snag-Free Hair Ties (50 pc)", cat: "Rubber Bands", price: 49, orig: null, img: IMG.h, fallback: F_CLIP, desc: "Pack of 50 snag-free, no-crease elastic hair ties. Strong hold for daily use — the everyday essential.", badge: "", variants: ["Pack of 50", "Pack of 100"], colors: ["Black", "Multicolor", "Nude"], rating: 4.8, reviews: 489 },
+  { id: 11, name: "Elastic Rubber Bands Jar", cat: "Rubber Bands", price: 79, orig: 99, img: IMG.a, fallback: F_CLIP, desc: "Handy jar of soft elastic rubber bands — gentle on hair, ideal for braids, buns and kids' styling.", badge: "", variants: ["200 pc", "500 pc"], colors: ["Black", "Transparent", "Assorted"], rating: 4.7, reviews: 221 },
+
+  { id: 12, name: "Kids Animal Clips Set", cat: "Kids Collection", price: 129, orig: null, img: IMG.b, fallback: F_CLIP, desc: "Adorable animal-shaped clips kids love. Gentle grip, bright colours, perfect for little ones.", badge: "New", variants: ["Set of 6", "Set of 10"], colors: ["Multicolor"], rating: 4.9, reviews: 198 },
+  { id: 13, name: "Kids Scrunchie Pack", cat: "Kids Collection", price: 99, orig: 149, img: IMG.c, fallback: F_CLIP, desc: "Soft, colourful scrunchies sized for kids. Gentle on delicate hair and super cute.", badge: "", variants: ["Set of 5"], colors: ["Pastel", "Bright"], rating: 4.8, reviews: 132 },
+
+  { id: 14, name: "Hair Accessory Gift Box", cat: "Combo & Gifts", price: 499, orig: 799, img: IMG.d, fallback: F_EXT, desc: "A beautifully packed box of clips, scrunchies, bows & a headband. The perfect gift for someone special.", badge: "40% Off", variants: ["Gift Box"], colors: ["Assorted"], rating: 5.0, reviews: 96 },
+  { id: 15, name: "Everyday Essentials Combo", cat: "Combo & Gifts", price: 299, orig: 449, img: IMG.e, fallback: F_CLIP, desc: "Curated combo of daily-use claw clips, hair ties & a scrunchie set. Everything you need, value-packed.", badge: "Combo", variants: ["Combo Pack"], colors: ["Neutral", "Assorted"], rating: 4.8, reviews: 174 },
 ];
 
 export const TESTIMONIALS = [
-  {name:'Priya Sharma', loc:'Delhi', initials:'PS', rating:5, text:'Quality ekdum top notch hai! Wall hooks ne ghar ko organize kar diya. Delivery bhi super fast thi. Definitely repurchasing!', product:'Adhesive Hooks'},
-  {name:'Kavita Reddy', loc:'Mumbai', initials:'KR', rating:5, text:'Claw clips amazing hain. WhatsApp support ne 5 min mein reply diya — outstanding service! Packaging bhi gift-worthy thi.', product:'Hair Accessories'},
-  {name:'Meera Joshi', loc:'Pune', initials:'MJ', rating:5, text:'Knife set bahut sharp aur sturdy hai. Price ke hisaab se best value for money. Ghar mein sab use kar rahe hain!', product:'Knife Set'},
-  {name:'Ananya Singh', loc:'Bangalore', initials:'AS', rating:5, text:'Decoration kit ne birthday party complete kar di! COD option bhi tha. Sabne pucha kahan se liya — highly recommend!', product:'Decoration Kit'},
+  { name: "Priya Sharma", loc: "Delhi", initials: "PS", rating: 5, text: "Claw clips ki quality top-notch hai! Grip strong hai aur baalon ko damage nahi karte. Packaging bhi gift-worthy thi. Definitely repurchasing!", product: "Hair Claws & Clips" },
+  { name: "Kavita Reddy", loc: "Mumbai", initials: "KR", rating: 5, text: "Satin scrunchies bahut soft hain, bilkul crease nahi padta. Look premium hai aur price perfect. Loved it!", product: "Scrunchies & Bows" },
+  { name: "Meera Joshi", loc: "Pune", initials: "MJ", rating: 5, text: "Pearl headband ne mere festive look ko complete kar diya. Sabne pucha kahan se liya — highly recommend!", product: "Headbands" },
+  { name: "Ananya Singh", loc: "Bangalore", initials: "AS", rating: 5, text: "Hair extensions ekdum natural lagti hain aur clip-in easy hai. Instant volume mil gaya. Best value for money!", product: "Hair Extensions" },
 ];
 
 // ── Helpers / derived ──
-export const HERO_IMAGE =
-  "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1400&q=85";
+export const HERO_IMAGE = `${U}1522337360788-8b13dee7a37e?w=1400&q=85`;
 export const WHATSAPP_LINK =
-  "https://wa.me/919818701724?text=Hi%20I%20need%20help%20with%20an%20order";
+  "https://wa.me/919818701724?text=Hi%20I%20need%20help%20with%20a%20Shanya%20order";
 
 export const slugify = (s: string) =>
   s.toLowerCase().trim().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -46,7 +78,7 @@ export const categoryNameFromSlug = (slug: string) => {
   return prod?.cat;
 };
 
-// Featured = products carrying a discount/badge; Deal = the Knife Set.
-export const FEATURED = PRODUCTS.filter((p) => p.orig !== null);
+// Featured = products on offer; Deal = the bestselling extensions
+export const FEATURED = PRODUCTS.filter((p) => p.orig !== null).slice(0, 8);
 export const TRENDING = PRODUCTS;
-export const DEAL = PRODUCTS.find((p) => p.id === 3)!;
+export const DEAL = PRODUCTS.find((p) => p.id === 8)!;
