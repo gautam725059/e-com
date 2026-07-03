@@ -1,14 +1,16 @@
 import Link from "next/link";
 import StoreLayout from "@/components/layout/StoreLayout";
 import ProductCard from "@/components/store/ProductCard";
-import { PRODUCTS, CATEGORIES, slugify, categoryNameFromSlug } from "@/lib/data";
+import { CATEGORIES, slugify, categoryNameFromSlug } from "@/lib/data";
+import { getCatalog } from "@/lib/catalog";
 
 type Props = { searchParams?: Promise<{ cat?: string }> };
 
 export default async function ShopPage({ searchParams }: Props) {
   const sp = (await searchParams) ?? {};
   const active = sp.cat;
-  const items = active ? PRODUCTS.filter((p) => slugify(p.cat) === active) : PRODUCTS;
+  const all = await getCatalog();
+  const items = active ? all.filter((p) => slugify(p.cat) === active) : all;
   const title = active ? categoryNameFromSlug(active) ?? "Products" : "All Products";
 
   return (

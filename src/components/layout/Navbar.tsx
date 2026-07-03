@@ -2,15 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, Heart, ShoppingBag, Menu, X } from "lucide-react";
+import { Search, Heart, ShoppingBag, Menu, X, ChevronDown } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
+import { CATEGORIES } from "@/lib/data";
 import BrandLogo from "./BrandLogo";
 
 const LINKS = [
-  { label: "Products", href: "/products" },
-  { label: "Top Categories", href: "/#TopCategories" },
-  { label: "Track Order", href: "/track-order" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Home", href: "/" },
+  { label: "Shop", href: "/products" },
+  { label: "Collections", href: "/#TopCategories" },
+  { label: "New Arrivals", href: "/products" },
+  { label: "Sale", href: "/products" },
 ];
 
 export default function Navbar() {
@@ -25,11 +27,23 @@ export default function Navbar() {
         </Link>
 
         <div className="nav-links">
-          {LINKS.map((l) => (
-            <Link key={l.label} href={l.href} className="nl">
-              {l.label}
-            </Link>
-          ))}
+          <Link href="/" className="nl">Home</Link>
+          <Link href="/products" className="nl">Shop</Link>
+
+          <div className="nav-dd">
+            <button className="nl nav-dd-btn">
+              Shop By Category <ChevronDown size={14} />
+            </button>
+            <div className="nav-dd-menu">
+              {CATEGORIES.map((c) => (
+                <Link key={c.name} href={c.href}>{c.name}</Link>
+              ))}
+            </div>
+          </div>
+
+          <Link href="/#TopCategories" className="nl">Collections</Link>
+          <Link href="/products" className="nl">New Arrivals</Link>
+          <Link href="/products" className="nl">Sale</Link>
         </div>
 
         <div className="nav-r">
@@ -52,9 +66,13 @@ export default function Navbar() {
 
       <div className={`mobile-menu${menu ? " open" : ""}`}>
         {LINKS.map((l) => (
-          <Link key={l.label} href={l.href} onClick={() => setMenu(false)}>
-            {l.label}
-          </Link>
+          <Link key={l.label} href={l.href} onClick={() => setMenu(false)}>{l.label}</Link>
+        ))}
+        <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: ".12em", color: "var(--gold)", padding: "10px 0 4px" }}>
+          Shop By Category
+        </div>
+        {CATEGORIES.map((c) => (
+          <Link key={c.name} href={c.href} onClick={() => setMenu(false)} style={{ paddingLeft: 8 }}>{c.name}</Link>
         ))}
       </div>
     </>

@@ -2,26 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ShoppingBag, Heart, Check } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import type { Product } from "@/types";
 
 export default function ProductCard({ p }: { p: Product }) {
   const { state, dispatch } = useStore();
   const [src, setSrc] = useState(p.img);
-  const [added, setAdded] = useState(false);
   const wished = state.wishlist.includes(p.id);
-
-  const add = () => {
-    dispatch({ type: "ADD_TO_CART", product: p, qty: 1, variant: p.variants[0], color: p.colors[0] });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1800);
-  };
+  const discount = p.orig ? Math.round((1 - p.price / p.orig) * 100) : 0;
+  const href = `/products/${p.id}`;
 
   return (
     <div className="pc">
       <div className="pc-iw">
-        <Link href={`/products/${p.id}`}>
+        <Link href={href} aria-label={p.name}>
           <img
             className="pc-img"
             src={src}
@@ -30,43 +25,27 @@ export default function ProductCard({ p }: { p: Product }) {
             onError={() => src !== p.fallback && setSrc(p.fallback)}
           />
         </Link>
-        {p.badge && (
-          <span className="fc-off" style={{ position: "absolute", top: 10, left: 10 }}>
-            {p.badge}
-          </span>
+
+        {(discount > 0 || p.badge) && (
+          <span className="fc-off">{discount > 0 ? `${discount}% Off` : p.badge}</span>
         )}
-        <div
+
+        <button
           className={`pc-wl${wished ? " on" : ""}`}
+          aria-label="Add to wishlist"
           onClick={() => dispatch({ type: "TOGGLE_WISHLIST", id: p.id })}
         >
-          <Heart size={15} />
-        </div>
-      </div>
-      <div className="pc-body">
-        <div className="pc-cat">{p.cat}</div>
-        <Link href={`/products/${p.id}`}>
-          <div className="pc-name">{p.name}</div>
-        </Link>
-        <div className="pc-price">
-          ₹{p.price}
-          {p.orig && (
-            <span style={{ fontSize: 12, color: "#bbb", textDecoration: "line-through", marginLeft: 6 }}>
-              ₹{p.orig}
-            </span>
-          )}
-        </div>
-        <button className={`pc-add${added ? " added" : ""}`} onClick={add}>
-          {added ? (
-            <>
-              <Check size={14} /> Added!
-            </>
-          ) : (
-            <>
-              <ShoppingBag size={14} /> Add to Cart
-            </>
-          )}
+          <Heart size={14} />
         </button>
       </div>
+
+      <Link href={href} className="pc-body">
+        <div className="pc-name">{p.name}</div>
+        <div className="pc-price">
+          ₹{p.price}
+          {p.orig && <span className="pc-mrp">₹{p.orig}</span>}
+        </div>
+      </Link>
     </div>
   );
 }

@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import StoreLayout from "@/components/layout/StoreLayout";
 import ProductDetail from "@/components/store/ProductDetail";
 import ProductCard from "@/components/store/ProductCard";
-import { PRODUCTS, getProduct, slugify } from "@/lib/data";
+import { PRODUCTS, slugify } from "@/lib/data";
+import { getCatalog, getCatalogProduct } from "@/lib/catalog";
+
+export const revalidate = 10;
 
 export function generateStaticParams() {
   return PRODUCTS.map((p) => ({ id: String(p.id) }));
@@ -13,10 +16,10 @@ type Props = { params: Promise<{ id: string }> };
 
 export default async function ProductPage({ params }: Props) {
   const { id } = await params;
-  const product = getProduct(Number(id));
+  const product = await getCatalogProduct(Number(id));
   if (!product) notFound();
 
-  const related = PRODUCTS.filter((p) => p.id !== product.id);
+  const related = (await getCatalog()).filter((p) => p.id !== product.id);
 
   return (
     <StoreLayout>

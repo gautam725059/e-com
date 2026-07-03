@@ -6,14 +6,14 @@ const F_EXT = "/images/hair-extansions.avif"; // local hair fallback
 
 // Pool of hair / beauty images (local fallback guarantees nothing breaks)
 const IMG = {
-  a: `${U}1522337360788-8b13dee7a37e?w=700&q=80`,
-  b: `${U}1487412947147-5cebf100ffc2?w=700&q=80`,
-  c: `${U}1519415943484-9fa1873496d4?w=700&q=80`,
-  d: `${U}1492106087820-71f1a00d2b11?w=700&q=80`,
-  e: `${U}1457972729786-0411a3b2b626?w=700&q=80`,
-  f: `${U}1595476108010-b4d1f102b1b1?w=700&q=80`,
-  g: `${U}1503185912284-5271ff81b9a8?w=700&q=80`,
-  h: `${U}1605980776566-0486c3ac7617?w=700&q=80`,
+  a: `${U}1522337360788-8b13dee7a37e?w=700&q=80&fm=webp`,
+  b: `${U}1487412947147-5cebf100ffc2?w=700&q=80&fm=webp`,
+  c: `${U}1519415943484-9fa1873496d4?w=700&q=80&fm=webp`,
+  d: `${U}1492106087820-71f1a00d2b11?w=700&q=80&fm=webp`,
+  e: `${U}1457972729786-0411a3b2b626?w=700&q=80&fm=webp`,
+  f: `${U}1595476108010-b4d1f102b1b1?w=700&q=80&fm=webp`,
+  g: `${U}1503185912284-5271ff81b9a8?w=700&q=80&fm=webp`,
+  h: `${U}1605980776566-0486c3ac7617?w=700&q=80&fm=webp`,
 };
 
 export const CATEGORIES: Category[] = [
@@ -22,7 +22,6 @@ export const CATEGORIES: Category[] = [
   { name: "Headbands", img: IMG.f, href: "/category/headbands" },
   { name: "Hair Extensions", img: IMG.e, href: "/category/hair-extensions" },
   { name: "Rubber Bands", img: IMG.h, href: "/category/rubber-bands" },
-  { name: "Kids Collection", img: IMG.b, href: "/category/kids-collection" },
   { name: "Combo & Gifts", img: IMG.d, href: "/category/combo-and-gifts" },
 ];
 
@@ -44,8 +43,6 @@ export const PRODUCTS: Product[] = [
   { id: 10, name: "Snag-Free Hair Ties (50 pc)", cat: "Rubber Bands", price: 49, orig: null, img: IMG.h, fallback: F_CLIP, desc: "Pack of 50 snag-free, no-crease elastic hair ties. Strong hold for daily use — the everyday essential.", badge: "", variants: ["Pack of 50", "Pack of 100"], colors: ["Black", "Multicolor", "Nude"], rating: 4.8, reviews: 489 },
   { id: 11, name: "Elastic Rubber Bands Jar", cat: "Rubber Bands", price: 79, orig: 99, img: IMG.a, fallback: F_CLIP, desc: "Handy jar of soft elastic rubber bands — gentle on hair, ideal for braids, buns and kids' styling.", badge: "", variants: ["200 pc", "500 pc"], colors: ["Black", "Transparent", "Assorted"], rating: 4.7, reviews: 221 },
 
-  { id: 12, name: "Kids Animal Clips Set", cat: "Kids Collection", price: 129, orig: null, img: IMG.b, fallback: F_CLIP, desc: "Adorable animal-shaped clips kids love. Gentle grip, bright colours, perfect for little ones.", badge: "New", variants: ["Set of 6", "Set of 10"], colors: ["Multicolor"], rating: 4.9, reviews: 198 },
-  { id: 13, name: "Kids Scrunchie Pack", cat: "Kids Collection", price: 99, orig: 149, img: IMG.c, fallback: F_CLIP, desc: "Soft, colourful scrunchies sized for kids. Gentle on delicate hair and super cute.", badge: "", variants: ["Set of 5"], colors: ["Pastel", "Bright"], rating: 4.8, reviews: 132 },
 
   { id: 14, name: "Hair Accessory Gift Box", cat: "Combo & Gifts", price: 499, orig: 799, img: IMG.d, fallback: F_EXT, desc: "A beautifully packed box of clips, scrunchies, bows & a headband. The perfect gift for someone special.", badge: "40% Off", variants: ["Gift Box"], colors: ["Assorted"], rating: 5.0, reviews: 96 },
   { id: 15, name: "Everyday Essentials Combo", cat: "Combo & Gifts", price: 299, orig: 449, img: IMG.e, fallback: F_CLIP, desc: "Curated combo of daily-use claw clips, hair ties & a scrunchie set. Everything you need, value-packed.", badge: "Combo", variants: ["Combo Pack"], colors: ["Neutral", "Assorted"], rating: 4.8, reviews: 174 },
@@ -59,9 +56,28 @@ export const TESTIMONIALS = [
 ];
 
 // ── Helpers / derived ──
-export const HERO_IMAGE = `${U}1522337360788-8b13dee7a37e?w=1400&q=85`;
+export const HERO_IMAGE = `${U}1522337360788-8b13dee7a37e?w=1400&q=85&fm=webp`;
+export const HERO_SLIDES = [
+  `${U}1522337360788-8b13dee7a37e?w=1600&q=85&fm=webp`,
+  `${U}1519415943484-9fa1873496d4?w=1600&q=85&fm=webp`,
+  `${U}1457972729786-0411a3b2b626?w=1600&q=85&fm=webp`,
+  `${U}1595476108010-b4d1f102b1b1?w=1600&q=85&fm=webp`,
+  `${U}1503185912284-5271ff81b9a8?w=1600&q=85&fm=webp`,
+];
 export const WHATSAPP_LINK =
   "https://wa.me/919818701724?text=Hi%20I%20need%20help%20with%20a%20Shanya%20order";
+export const SUPPORT_EMAIL = "support@shanya.in";
+export const INSTAGRAM_URL = "https://www.instagram.com/shanya.in";
+
+// Instagram feed thumbnails (webp-optimised)
+export const INSTAGRAM_FEED = [
+  `${U}1522337360788-8b13dee7a37e?w=300&q=70&fm=webp`,
+  `${U}1519415943484-9fa1873496d4?w=300&q=70&fm=webp`,
+  `${U}1457972729786-0411a3b2b626?w=300&q=70&fm=webp`,
+  `${U}1595476108010-b4d1f102b1b1?w=300&q=70&fm=webp`,
+  `${U}1503185912284-5271ff81b9a8?w=300&q=70&fm=webp`,
+  `${U}1487412947147-5cebf100ffc2?w=300&q=70&fm=webp`,
+];
 
 export const slugify = (s: string) =>
   s.toLowerCase().trim().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");

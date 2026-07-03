@@ -1,27 +1,51 @@
-import { Truck, RotateCcw, Lock, Headphones } from "lucide-react";
+import { Truck, Banknote, RotateCcw, Users } from "lucide-react";
 
 const ITEMS = [
-  { icon: Truck, title: "Free Shipping", sub: "Orders above ₹1000" },
-  { icon: RotateCcw, title: "30-Day Returns", sub: "Hassle-free policy" },
-  { icon: Lock, title: "Secure Payments", sub: "Encrypted & trusted" },
-  { icon: Headphones, title: "24/7 Support", sub: "Help when you need it" },
+  { icon: Truck, title: "Free Shipping", sub: "On orders above ₹599" },
+  { icon: Banknote, title: "COD Available", sub: "Pay on delivery" },
+  { icon: RotateCcw, title: "Easy Returns", sub: "Hassle-free policy" },
+  { icon: Users, title: "10,000+ Customers", sub: "Loved across India" },
 ];
+
+function TrustItem({
+  Icon,
+  title,
+  sub,
+}: {
+  Icon: React.ComponentType<{ size?: number }>;
+  title: string;
+  sub: string;
+}) {
+  return (
+    <div className="ti">
+      <div className="ti-ic">
+        <Icon size={18} />
+      </div>
+      <div>
+        <div className="ti-t">{title}</div>
+        <div className="ti-s">{sub}</div>
+      </div>
+    </div>
+  );
+}
 
 export default function TrustBar() {
   return (
     <div className="trust">
+      {/* Desktop / tablet: static grid */}
       <div className="trust-g">
-        {ITEMS.map(({ icon: Icon, title, sub }) => (
-          <div className="ti" key={title}>
-            <div className="ti-ic">
-              <Icon size={18} />
-            </div>
-            <div>
-              <div className="ti-t">{title}</div>
-              <div className="ti-s">{sub}</div>
-            </div>
-          </div>
+        {ITEMS.map((it) => (
+          <TrustItem key={it.title} Icon={it.icon} title={it.title} sub={it.sub} />
         ))}
+      </div>
+
+      {/* Mobile: scrolling marquee (duplicated for a seamless loop) */}
+      <div className="trust-mq" aria-hidden="true">
+        <div className="trust-mq-track">
+          {[...ITEMS, ...ITEMS].map((it, i) => (
+            <TrustItem key={i} Icon={it.icon} title={it.title} sub={it.sub} />
+          ))}
+        </div>
       </div>
     </div>
   );

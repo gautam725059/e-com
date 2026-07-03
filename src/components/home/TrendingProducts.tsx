@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import ProductCard from "@/components/store/ProductCard";
-import { TRENDING } from "@/lib/data";
+import type { Product } from "@/types";
 
-export default function TrendingProducts() {
+export default function TrendingProducts({ products }: { products: Product[] }) {
   return (
     <section className="sec" style={{ background: "var(--cream)" }}>
       <div className="sec-hd">
@@ -16,7 +16,7 @@ export default function TrendingProducts() {
         </Link>
       </div>
       <div className="prod-g">
-        {TRENDING.map((p) => (
+        {products.map((p) => (
           <ProductCard key={p.id} p={p} />
         ))}
       </div>

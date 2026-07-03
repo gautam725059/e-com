@@ -534,6 +534,49 @@ export default function AdminPage() {
     w.document.close();
   }
 
+  // ── Storefront catalog editor (name / description) ──
+  const [catalog, setCatalog] = useState<any[]>([]);
+  const [loadingCatalog, setLoadingCatalog] = useState(false);
+
+  useEffect(() => {
+    async function fetchCatalog() {
+      try {
+        setLoadingCatalog(true);
+        const res = await fetch("/api/admin/catalog", { headers: { "x-admin-pass": adminPass } });
+        if (res.ok) {
+          const d = await res.json();
+          setCatalog(d.products || []);
+        }
+      } catch (e) {
+        console.error("catalog fetch failed", e);
+      } finally {
+        setLoadingCatalog(false);
+      }
+    }
+    if (authorized && adminPass) fetchCatalog();
+  }, [authorized, adminPass]);
+
+  function updateCatalogField(id: number, field: "name" | "desc", value: string) {
+    setCatalog((prev) => prev.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
+  }
+
+  async function handleSaveCatalog(id: number) {
+    const item = catalog.find((p) => p.id === id);
+    if (!item) return;
+    try {
+      const r = await fetch("/api/admin/catalog", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", "x-admin-pass": adminPass },
+        body: JSON.stringify({ id, name: item.name, desc: item.desc }),
+      });
+      if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || "Save failed");
+      setMessage(`Saved "${item.name}" — live on the store`);
+      setTimeout(() => setMessage(""), 2800);
+    } catch (err: any) {
+      setMessage(String(err.message || err));
+    }
+  }
+
   // Live stats computed entirely from website data (Supabase orders + catalog)
   const displayOrders = orders.length;
   const displayRevenue = orders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
@@ -627,6 +670,7 @@ export default function AdminPage() {
     { label: "Dashboard", icon: LayoutDashboard },
     { label: "Orders", icon: ShoppingBag },
     { label: "Products", icon: Package },
+    { label: "Catalog", icon: Tag },
     { label: "Categories", icon: FolderTree },
     { label: "Customers", icon: Users },
     { label: "Coupons", icon: Tag },
@@ -1401,6 +1445,55 @@ export default function AdminPage() {
                 </div>
               </div>
 
+            </div>
+          )}
+
+          {/* TAB: CATALOG (edit storefront product name / description) */}
+          {activeTab === "Catalog" && (
+            <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-bold text-gray-900">Storefront Catalog</h4>
+                  <p className="text-xs text-gray-400">Edit the product name &amp; description shown on the website. Changes go live within ~10 seconds.</p>
+                </div>
+                <div className="text-xs font-semibold text-gray-400">{catalog.length} products</div>
+              </div>
+
+              {loadingCatalog ? (
+                <div className="text-center text-gray-400 py-8 font-medium">Loading catalog…</div>
+              ) : (
+                <div className="space-y-4">
+                  {catalog.map((p) => (
+                    <div key={p.id} className="border border-gray-100 rounded-lg p-4 grid md:grid-cols-[1.2fr_2fr_auto] gap-4 items-start">
+                      <div>
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">
+                          Name · <span className="text-[#967850]">{p.cat}</span> · ₹{p.price}
+                        </label>
+                        <input
+                          value={p.name}
+                          onChange={(e) => updateCatalogField(p.id, "name", e.target.value)}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-lg p-2.5 text-sm font-semibold focus:outline-none focus:border-[#967850]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Description</label>
+                        <textarea
+                          value={p.desc}
+                          onChange={(e) => updateCatalogField(p.id, "desc", e.target.value)}
+                          rows={2}
+                          className="w-full bg-gray-50 border border-gray-100 rounded-lg p-2.5 text-xs focus:outline-none focus:border-[#967850]"
+                        />
+                      </div>
+                      <button
+                        onClick={() => handleSaveCatalog(p.id)}
+                        className="bg-[#967850] hover:bg-[#7d6340] text-white text-xs font-bold px-5 py-2.5 rounded-lg mt-5 whitespace-nowrap transition"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

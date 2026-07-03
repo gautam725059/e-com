@@ -2,7 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import StoreLayout from "@/components/layout/StoreLayout";
 import ProductCard from "@/components/store/ProductCard";
-import { CATEGORIES, productsByCategorySlug, categoryNameFromSlug } from "@/lib/data";
+import { CATEGORIES, categoryNameFromSlug } from "@/lib/data";
+import { catalogByCategorySlug } from "@/lib/catalog";
+
+export const revalidate = 10;
 
 export function generateStaticParams() {
   return CATEGORIES.map((c) => ({ slug: c.href.split("/").pop()! }));
@@ -15,7 +18,7 @@ export default async function CategoryPage({ params }: Props) {
   const name = categoryNameFromSlug(slug);
   if (!name) notFound();
 
-  const items = productsByCategorySlug(slug);
+  const items = await catalogByCategorySlug(slug);
 
   return (
     <StoreLayout>

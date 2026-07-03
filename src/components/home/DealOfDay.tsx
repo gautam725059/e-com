@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Zap, ArrowRight } from "lucide-react";
 import Img from "@/components/ui/Img";
-import { DEAL } from "@/lib/data";
+import type { Product } from "@/types";
 
-export default function DealOfDay() {
+export default function DealOfDay({ deal }: { deal: Product }) {
   const [t, setT] = useState({ h: "--", m: "--", s: "--" });
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function DealOfDay() {
     return () => clearInterval(id);
   }, []);
 
-  const p = DEAL;
+  const p = deal;
   const pct = p.orig ? Math.round((1 - p.price / p.orig) * 100) : 0;
 
   return (

@@ -1,28 +1,32 @@
 import StoreLayout from "@/components/layout/StoreLayout";
 import HeroSection from "@/components/home/HeroSection";
-import MarqueeBar from "@/components/home/MarqueeBar";
-import CategorySection from "@/components/home/CategorySection";
 import TrustBar from "@/components/home/TrustBar";
-import FeaturedProducts from "@/components/home/FeaturedProducts";
-import TrendingProducts from "@/components/home/TrendingProducts";
+import CategorySection from "@/components/home/CategorySection";
 import DealOfDay from "@/components/home/DealOfDay";
+import TrendingProducts from "@/components/home/TrendingProducts";
+import FeaturedBanner from "@/components/home/FeaturedBanner";
+import WhyShanya from "@/components/home/WhyShanya";
 import Testimonials from "@/components/home/Testimonials";
-import BlogSection from "@/components/home/BlogSection";
-import ContactSection from "@/components/home/ContactSection";
+import FaqSection from "@/components/home/FaqSection";
+import { getCatalog } from "@/lib/catalog";
 
-export default function Home() {
+export const revalidate = 10;
+
+export default async function Home() {
+  const catalog = await getCatalog();
+  const deal = catalog.find((p) => p.id === 8) ?? catalog[0];
+
   return (
     <StoreLayout>
       <HeroSection />
-      <MarqueeBar />
-      <CategorySection />
       <TrustBar />
-      <FeaturedProducts />
-      <TrendingProducts />
-      <DealOfDay />
+      <CategorySection />
+      <DealOfDay deal={deal} />
+      <TrendingProducts products={catalog} />
+      <FeaturedBanner />
+      <WhyShanya />
       <Testimonials />
-      <BlogSection />
-      <ContactSection />
+      <FaqSection />
     </StoreLayout>
   );
 }
