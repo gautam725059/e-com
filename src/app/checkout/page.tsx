@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import StoreLayout from "@/components/layout/StoreLayout";
 import { useStore } from "@/context/StoreContext";
-import { ORDERS_ENABLED, FREE_SHIPPING_ABOVE, SHIPPING_FEE } from "@/lib/data";
+import { ORDERS_ENABLED, FREE_SHIPPING_ABOVE, COD_MIN_ORDER } from "@/lib/data";
+import { computeShipping } from "@/lib/shipping";
 
 declare global {
   interface Window {
@@ -19,12 +20,18 @@ export default function CheckoutPage() {
   const { state, dispatch, cartTotal } = useStore();
   const router = useRouter();
   const [form, setForm] = useState(EMPTY);
-  const [method, setMethod] = useState<"cod" | "razorpay">("cod");
+  const [method, setMethod] = useState<"cod" | "razorpay">("razorpay");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const shipping = cartTotal >= FREE_SHIPPING_ABOVE ? 0 : SHIPPING_FEE;
+  // Shipping = actual courier rate for the customer's pincode zone (free above ₹999)
+  const ship = computeShipping(form.pincode, cartTotal);
+  const shipping = ship.shipping;
   const total = cartTotal + shipping;
+
+  // COD unlocks only on orders of ₹1499+ (same rule is enforced on the server).
+  const codAllowed = cartTotal >= COD_MIN_ORDER;
+  const payMethod: "cod" | "razorpay" = codAllowed ? method : "razorpay";
 
   const set = (k: keyof typeof EMPTY) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -38,7 +45,7 @@ export default function CheckoutPage() {
     const res = await fetch("/api/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, items: cartPayload(), payment_method: method, ...payment }),
+      body: JSON.stringify({ ...form, items: cartPayload(), payment_method: payMethod, ...payment }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Could not place your order.");
@@ -51,7 +58,7 @@ export default function CheckoutPage() {
     const res = await fetch("/api/razorpay/order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: cartPayload() }),
+      body: JSON.stringify({ items: cartPayload(), pincode: form.pincode }),
     });
     const rzp = await res.json();
     if (!res.ok) throw new Error(rzp.error || "Could not start the payment.");
@@ -108,7 +115,7 @@ export default function CheckoutPage() {
     setError("");
     setLoading(true);
     try {
-      if (method === "razorpay") {
+      if (payMethod === "razorpay") {
         await payOnline(); // navigation happens inside the success handler
       } else {
         await saveOrder(); // COD
@@ -171,18 +178,36 @@ export default function CheckoutPage() {
 
               <div className="co-card" style={{ marginTop: 16 }}>
                 <h3>Payment Method</h3>
-                <label className={`pay-opt${method === "razorpay" ? " sel" : ""}`}>
-                  <input type="radio" name="pay" checked={method === "razorpay"} onChange={() => setMethod("razorpay")} />
+                <label className={`pay-opt${payMethod === "razorpay" ? " sel" : ""}`}>
+                  <input
+                    type="radio"
+                    name="pay"
+                    checked={payMethod === "razorpay"}
+                    onChange={() => setMethod("razorpay")}
+                  />
                   <span>
                     <b>Pay Online</b>
                     <em>UPI · Cards · Netbanking · Wallets — secured by Razorpay</em>
                   </span>
                 </label>
-                <label className={`pay-opt${method === "cod" ? " sel" : ""}`}>
-                  <input type="radio" name="pay" checked={method === "cod"} onChange={() => setMethod("cod")} />
+
+                <label className={`pay-opt${payMethod === "cod" ? " sel" : ""}${!codAllowed ? " off" : ""}`}>
+                  <input
+                    type="radio"
+                    name="pay"
+                    disabled={!codAllowed}
+                    checked={payMethod === "cod"}
+                    onChange={() => setMethod("cod")}
+                  />
                   <span>
                     <b>Cash on Delivery</b>
-                    <em>Pay in cash when your order arrives</em>
+                    {codAllowed ? (
+                      <em>Pay in cash when your order arrives</em>
+                    ) : (
+                      <em>
+                        🔒 Available on orders of ₹{COD_MIN_ORDER}+ — add ₹{COD_MIN_ORDER - cartTotal} more to unlock
+                      </em>
+                    )}
                   </span>
                 </label>
               </div>
@@ -203,13 +228,34 @@ export default function CheckoutPage() {
                 <span>₹{cartTotal}</span>
               </div>
               <div className="co-sum-row">
-                <span>Shipping</span>
-                <span>{shipping === 0 ? "Free" : `₹${shipping}`}</span>
+                <span>
+                  Shipping
+                  {ship.zone && !ship.free && (
+                    <em style={{ display: "block", fontStyle: "normal", fontSize: 11, color: "var(--grey)" }}>
+                      {ship.zone.label}
+                    </em>
+                  )}
+                </span>
+                <span>
+                  {ship.free ? (
+                    <b style={{ color: "#16a34a" }}>Free</b>
+                  ) : ship.known ? (
+                    `₹${shipping}`
+                  ) : (
+                    <em style={{ fontStyle: "normal", fontSize: 12, color: "var(--grey)" }}>Enter pincode</em>
+                  )}
+                </span>
               </div>
               <div className="co-sum-row total">
                 <span>Total</span>
                 <b>₹{total}</b>
               </div>
+
+              {!ship.free && (
+                <p style={{ fontSize: 11, color: "var(--grey)", marginTop: 6 }}>
+                  Add ₹{FREE_SHIPPING_ABOVE - cartTotal} more for <b>free shipping</b>
+                </p>
+              )}
 
               {error && <p style={{ color: "#e84040", fontSize: 12.5, marginTop: 12 }}>{error}</p>}
 
@@ -218,13 +264,13 @@ export default function CheckoutPage() {
                   ? "We're Back Soon 🛍️"
                   : loading
                   ? "Processing…"
-                  : method === "razorpay"
+                  : payMethod === "razorpay"
                   ? `Pay ₹${total} Securely`
                   : "Place COD Order"}
               </button>
 
               <p style={{ fontSize: 11, color: "var(--grey)", marginTop: 10, textAlign: "center" }}>
-                🔒 100% secure payments · Free shipping above ₹{FREE_SHIPPING_ABOVE}
+                🔒 100% secure payments · Free shipping above ₹{FREE_SHIPPING_ABOVE} · COD on ₹{COD_MIN_ORDER}+
               </p>
             </div>
           </form>

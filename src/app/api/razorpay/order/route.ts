@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { items, subtotal, shipping, total } = await priceCart(body?.items ?? []);
+    const { items, subtotal, shipping, total } = await priceCart(body?.items ?? [], String(body?.pincode ?? ""));
 
     if (items.length === 0 || total <= 0) {
       return NextResponse.json({ error: "Your cart is empty." }, { status: 400 });

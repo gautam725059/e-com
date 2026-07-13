@@ -68,9 +68,11 @@ export const WHATSAPP_LINK =
   "https://wa.me/919818701724?text=Hi%20I%20need%20help%20with%20a%20Shanya%20order";
 export const SUPPORT_EMAIL = "support@shanya.in";
 
-// Shipping rules (used by both the UI and the server — keep them in one place)
-export const FREE_SHIPPING_ABOVE = 599;
-export const SHIPPING_FEE = 50;
+// Order rules — single source of truth (used by the UI *and* enforced on the server)
+export const FREE_SHIPPING_ABOVE = 999; // ₹999+ → free shipping
+export const COD_MIN_ORDER = 1499; // Cash on Delivery only on orders of ₹1499+
+// Below ₹999 the customer pays the actual courier rate for their zone —
+// see ZONES in src/lib/shipping.ts
 
 // Set to false to pause orders (checkout then shows a "We're back soon" message).
 export const ORDERS_ENABLED = true;

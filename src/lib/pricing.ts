@@ -1,17 +1,21 @@
 import { getCatalog } from "./catalog";
-import { FREE_SHIPPING_ABOVE, SHIPPING_FEE } from "./data";
+import { computeShipping, type Zone } from "./shipping";
 import type { OrderItem } from "./orderStore";
 
 // Server-side pricing. NEVER trust prices sent by the browser — we look every
-// product up in the catalog and recompute the totals ourselves. This is what
-// the Razorpay charge and the saved order are based on.
+// product up in the catalog and recompute the totals ourselves. Shipping is
+// charged at the actual courier rate for the customer's pincode zone.
 export type IncomingItem = { id: number | string; qty: number | string; variant?: string; color?: string };
 
-export async function priceCart(incoming: IncomingItem[]): Promise<{
+export async function priceCart(
+  incoming: IncomingItem[],
+  pincode = ""
+): Promise<{
   items: OrderItem[];
   subtotal: number;
   shipping: number;
   total: number;
+  zone: Zone | null;
 }> {
   const catalog = await getCatalog();
 
@@ -31,6 +35,8 @@ export async function priceCart(incoming: IncomingItem[]): Promise<{
   }
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const shipping = subtotal >= FREE_SHIPPING_ABOVE || subtotal === 0 ? 0 : SHIPPING_FEE;
-  return { items, subtotal, shipping, total: subtotal + shipping };
+  // assumeRest: a missing/invalid pincode must never result in ₹0 shipping.
+  const { shipping, zone } = computeShipping(pincode, subtotal, { assumeRest: true });
+
+  return { items, subtotal, shipping, total: subtotal + shipping, zone };
 }

@@ -105,13 +105,13 @@ export default function ProductDetail({ product }: { product: Product }) {
 
         <div className="pd-trust">
           <div>
-            <Truck size={17} /> Free shipping on orders above ₹1000
+            <Truck size={17} /> Free shipping on orders above ₹999
           </div>
           <div>
             <RotateCcw size={17} /> Easy 30-day returns
           </div>
           <div>
-            <Lock size={17} /> Secure payments · COD available
+            <Lock size={17} /> Secure payments · COD on orders ₹1499+
           </div>
         </div>
       </div>

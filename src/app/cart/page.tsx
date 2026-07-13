@@ -5,12 +5,14 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import StoreLayout from "@/components/layout/StoreLayout";
 import Img from "@/components/ui/Img";
 import { useStore } from "@/context/StoreContext";
-import { FREE_SHIPPING_ABOVE, SHIPPING_FEE } from "@/lib/data";
+import { FREE_SHIPPING_ABOVE } from "@/lib/data";
+import { computeShipping } from "@/lib/shipping";
 
 export default function CartPage() {
   const { state, dispatch, cartTotal, cartCount } = useStore();
-  const shipping = cartTotal >= FREE_SHIPPING_ABOVE || cartTotal === 0 ? 0 : SHIPPING_FEE;
-  const total = cartTotal + shipping;
+  const ship = computeShipping("", cartTotal);
+  const freeShipping = ship.free;
+  const total = cartTotal + ship.shipping;
 
   return (
     <StoreLayout>
@@ -71,12 +73,19 @@ export default function CartPage() {
               </div>
               <div className="co-sum-row">
                 <span>Shipping</span>
-                <span>{shipping === 0 ? "Free" : `₹${shipping}`}</span>
+                <span>
+                  {freeShipping ? <b style={{ color: "#16a34a" }}>Free</b> : `₹${ship.shipping}`}
+                </span>
               </div>
               <div className="co-sum-row total">
                 <span>Total</span>
                 <b>₹{total}</b>
               </div>
+              {!freeShipping && (
+                <p style={{ fontSize: 11, color: "var(--grey)", marginTop: 6 }}>
+                  Add ₹{FREE_SHIPPING_ABOVE - cartTotal} more for <b>free shipping</b>
+                </p>
+              )}
               <Link href="/checkout" className="drawer-btn" style={{ marginTop: 14 }}>
                 Proceed to Checkout
               </Link>

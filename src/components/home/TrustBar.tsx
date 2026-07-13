@@ -1,8 +1,8 @@
 import { Truck, Banknote, RotateCcw, Users } from "lucide-react";
 
 const ITEMS = [
-  { icon: Truck, title: "Free Shipping", sub: "On orders above ₹599" },
-  { icon: Banknote, title: "COD Available", sub: "Pay on delivery" },
+  { icon: Truck, title: "Free Shipping", sub: "On orders above ₹999" },
+  { icon: Banknote, title: "COD Available", sub: "On orders ₹1499+" },
   { icon: RotateCcw, title: "Easy Returns", sub: "Hassle-free policy" },
   { icon: Users, title: "10,000+ Customers", sub: "Loved across India" },
 ];

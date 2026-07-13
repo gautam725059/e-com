@@ -164,5 +164,33 @@
     "payment_id": "pay_TCvhmaUKIZMorJ",
     "status": "placed",
     "created_at": "2026-07-13T09:00:30.070Z"
+  },
+  {
+    "order_number": "SHA458880628",
+    "customer_name": "Anuj Gupta",
+    "phone": "8003854698",
+    "email": "DAGENTERPRISESJP@gmail.com",
+    "address": "NEAR AJANTA SR. SEC. SCHOOL, TAJNAGAR, 452, FARRUKNAGAR ROAD, Farrukhnagar",
+    "city": "Gurugram",
+    "state": "Haryana",
+    "pincode": "122506",
+    "items": [
+      {
+        "id": 9,
+        "name": "Wavy Ponytail Extension",
+        "price": 399,
+        "qty": 1,
+        "variant": "16 inch",
+        "color": "Natural Black"
+      }
+    ],
+    "subtotal": 399,
+    "shipping": 50,
+    "total": 449,
+    "payment_method": "cod",
+    "payment_status": "pending",
+    "payment_id": null,
+    "status": "placed",
+    "created_at": "2026-07-13T09:23:08.807Z"
   }
 ]

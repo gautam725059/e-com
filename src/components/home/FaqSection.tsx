@@ -7,7 +7,7 @@ const FAQS = [
   },
   {
     q: "Is Cash on Delivery (COD) available?",
-    a: "Yes! COD is available across India. You can also pay online via UPI, cards or net banking at checkout.",
+    a: "Yes — COD is available across India on orders of ₹1499 and above. For orders below ₹1499, you can pay online via UPI, cards, net banking or wallets at checkout.",
   },
   {
     q: "What is your return / exchange policy?",
@@ -15,7 +15,7 @@ const FAQS = [
   },
   {
     q: "Do you charge for shipping?",
-    a: "Shipping is FREE on all orders above ₹599. A small flat fee applies to orders below that.",
+    a: "Shipping is FREE on all orders above ₹999. For orders below ₹999, a flat shipping charge of ₹99 applies.",
   },
   {
     q: "How do I track my order?",

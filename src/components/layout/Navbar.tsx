@@ -9,7 +9,6 @@ import BrandLogo from "./BrandLogo";
 
 const LINKS = [
   { label: "Home", href: "/" },
-  { label: "Shop", href: "/products" },
   { label: "Collections", href: "/#TopCategories" },
   { label: "New Arrivals", href: "/products" },
   { label: "Sale", href: "/products" },
@@ -28,7 +27,6 @@ export default function Navbar() {
 
         <div className="nav-links">
           <Link href="/" className="nl">Home</Link>
-          <Link href="/products" className="nl">Shop</Link>
 
           <div className="nav-dd">
             <button className="nl nav-dd-btn">

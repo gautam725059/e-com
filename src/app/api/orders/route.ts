@@ -3,6 +3,7 @@ import { normalizePhone } from "@/lib/checkout";
 import { addOrder, findOrder } from "@/lib/orderStore";
 import { priceCart } from "@/lib/pricing";
 import { verifyRazorpaySignature } from "@/lib/razorpay";
+import { COD_MIN_ORDER } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -24,8 +25,8 @@ export async function POST(req: Request) {
       }
     }
 
-    // Prices/totals are computed server-side from the catalog — never trusted from the client.
-    const { items, subtotal, shipping, total } = await priceCart(body?.items ?? []);
+    // Prices/totals computed server-side from the catalog; shipping from the pincode zone.
+    const { items, subtotal, shipping, total } = await priceCart(body?.items ?? [], String(body.pincode));
     if (items.length === 0) {
       return NextResponse.json({ error: "Your cart is empty." }, { status: 400 });
     }
@@ -33,6 +34,15 @@ export async function POST(req: Request) {
     const method = body?.payment_method === "razorpay" ? "razorpay" : "cod";
     let payment_status = "pending";
     let payment_id: string | null = null;
+
+    // COD is only allowed above the minimum order value — enforced here so it
+    // can't be bypassed from the browser.
+    if (method === "cod" && subtotal < COD_MIN_ORDER) {
+      return NextResponse.json(
+        { error: `Cash on Delivery is available on orders of ₹${COD_MIN_ORDER} and above. Please pay online.` },
+        { status: 400 }
+      );
+    }
 
     if (method === "razorpay") {
       const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;

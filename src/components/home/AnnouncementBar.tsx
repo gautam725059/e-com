@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 
 const MESSAGES = [
-  "💫 Free Shipping above ₹599 | Use code WELCOME for 10% OFF",
-  "🔥 COD Available | Pan India Delivery in 1-5 Days",
+  "💫 Free Shipping above ₹999 | Use code WELCOME for 10% OFF",
+  "🔥 COD on orders ₹1499+ | Pan India Delivery in 1-5 Days",
   "✨ New Arrivals Every Week | Shop Hair Accessories",
 ];
 
