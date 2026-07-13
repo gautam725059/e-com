@@ -28,7 +28,9 @@ export type StoredOrder = {
   subtotal: number;
   shipping: number;
   total: number;
-  payment_method: string;
+  payment_method: string; // cod | razorpay
+  payment_status: string; // pending (COD) | paid (verified online payment)
+  payment_id: string | null; // Razorpay payment id, if paid online
   status: string; // placed | confirmed | shipped | delivered | cancelled
   created_at: string;
 };

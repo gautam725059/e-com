@@ -67,6 +67,13 @@ export const HERO_SLIDES = [
 export const WHATSAPP_LINK =
   "https://wa.me/919818701724?text=Hi%20I%20need%20help%20with%20a%20Shanya%20order";
 export const SUPPORT_EMAIL = "support@shanya.in";
+
+// Shipping rules (used by both the UI and the server — keep them in one place)
+export const FREE_SHIPPING_ABOVE = 599;
+export const SHIPPING_FEE = 50;
+
+// Set to false to pause orders (checkout then shows a "We're back soon" message).
+export const ORDERS_ENABLED = true;
 export const INSTAGRAM_URL = "https://www.instagram.com/shanya.in";
 
 // Instagram feed thumbnails (webp-optimised)

@@ -5,10 +5,11 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import StoreLayout from "@/components/layout/StoreLayout";
 import Img from "@/components/ui/Img";
 import { useStore } from "@/context/StoreContext";
+import { FREE_SHIPPING_ABOVE, SHIPPING_FEE } from "@/lib/data";
 
 export default function CartPage() {
   const { state, dispatch, cartTotal, cartCount } = useStore();
-  const shipping = cartTotal >= 1000 || cartTotal === 0 ? 0 : 50;
+  const shipping = cartTotal >= FREE_SHIPPING_ABOVE || cartTotal === 0 ? 0 : SHIPPING_FEE;
   const total = cartTotal + shipping;
 
   return (

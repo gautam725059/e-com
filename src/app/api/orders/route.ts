@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { normalizePhone } from "@/lib/checkout";
-import { addOrder, findOrder, type OrderItem } from "@/lib/orderStore";
+import { addOrder, findOrder } from "@/lib/orderStore";
+import { priceCart } from "@/lib/pricing";
+import { verifyRazorpaySignature } from "@/lib/razorpay";
 
 export const dynamic = "force-dynamic";
 
@@ -10,10 +12,11 @@ function makeOrderNumber() {
   return `SHA${ts}${rnd}`;
 }
 
-// Create an order
+// Create an order (COD, or an online payment that we verify first).
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+
     const required = ["customer_name", "phone", "address", "city", "state", "pincode"] as const;
     for (const f of required) {
       if (!body?.[f] || String(body[f]).trim() === "") {
@@ -21,14 +24,30 @@ export async function POST(req: Request) {
       }
     }
 
-    const items: OrderItem[] = Array.isArray(body.items) ? body.items : [];
+    // Prices/totals are computed server-side from the catalog — never trusted from the client.
+    const { items, subtotal, shipping, total } = await priceCart(body?.items ?? []);
     if (items.length === 0) {
       return NextResponse.json({ error: "Your cart is empty." }, { status: 400 });
     }
 
-    const subtotal = items.reduce((s, i) => s + Number(i.price) * Number(i.qty), 0);
-    const shipping = subtotal >= 1000 ? 0 : 50;
-    const total = subtotal + shipping;
+    const method = body?.payment_method === "razorpay" ? "razorpay" : "cod";
+    let payment_status = "pending";
+    let payment_id: string | null = null;
+
+    if (method === "razorpay") {
+      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
+      const ok = verifyRazorpaySignature(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+      if (!ok) {
+        // Signature mismatch → payment is not genuine. Do NOT save the order.
+        return NextResponse.json(
+          { error: "Payment could not be verified. You have not been charged — please contact support." },
+          { status: 400 }
+        );
+      }
+      payment_status = "paid";
+      payment_id = String(razorpay_payment_id);
+    }
+
     const order_number = makeOrderNumber();
 
     await addOrder({
@@ -44,12 +63,14 @@ export async function POST(req: Request) {
       subtotal,
       shipping,
       total,
-      payment_method: "cod",
+      payment_method: method,
+      payment_status,
+      payment_id,
       status: "placed",
       created_at: new Date().toISOString(),
     });
 
-    return NextResponse.json({ order_number });
+    return NextResponse.json({ order_number, total, payment_status });
   } catch (err: any) {
     console.error("order POST error:", err);
     return NextResponse.json(

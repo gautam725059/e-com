@@ -136,5 +136,33 @@
     "payment_method": "cod",
     "status": "placed",
     "created_at": "2026-06-29T10:33:46.907Z"
+  },
+  {
+    "order_number": "SHA323007048",
+    "customer_name": "DAG ENTERPRISES",
+    "phone": "8003854698",
+    "email": "dagenterprisesjp@gmail.com",
+    "address": "TAJ NAGAR, FARRUKHNAGAR ROAD,",
+    "city": "Gurugram",
+    "state": "Haryana",
+    "pincode": "122506",
+    "items": [
+      {
+        "id": 1,
+        "name": "Pearl Hair Clips (Set of 6)",
+        "price": 149,
+        "qty": 1,
+        "variant": "Set of 6",
+        "color": "Pearl White"
+      }
+    ],
+    "subtotal": 149,
+    "shipping": 50,
+    "total": 199,
+    "payment_method": "razorpay",
+    "payment_status": "paid",
+    "payment_id": "pay_TCvhmaUKIZMorJ",
+    "status": "placed",
+    "created_at": "2026-07-13T09:00:30.070Z"
   }
 ]

@@ -22,7 +22,15 @@ export async function GET(req: Request) {
   if (!(await isAdmin(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const products = await getCatalog();
   return NextResponse.json({
-    products: products.map((p) => ({ id: p.id, name: p.name, desc: p.desc, cat: p.cat, price: p.price })),
+    products: products.map((p) => ({
+      id: p.id,
+      name: p.name,
+      desc: p.desc,
+      cat: p.cat,
+      price: p.price,
+      img: p.img,
+      fallback: p.fallback,
+    })),
   });
 }
 

@@ -3,6 +3,7 @@ import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import "./home-v3.css";
 import "./store.css";
+import Script from "next/script";
 import { StoreProvider } from "@/context/StoreContext";
 
 const playfair = Playfair_Display({
@@ -37,6 +38,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen">
         <StoreProvider>{children}</StoreProvider>
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
       </body>
     </html>
   );
