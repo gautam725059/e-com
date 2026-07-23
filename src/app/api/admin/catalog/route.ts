@@ -1,49 +1,93 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
-import { getCatalog, setCatalogOverride } from "@/lib/catalog";
+import { isAdminRequest } from "@/lib/adminAuth";
+import { getCatalog, addProduct, updateProduct, deleteProduct } from "@/lib/catalog";
 
 export const dynamic = "force-dynamic";
 
-async function isAdmin(req: Request): Promise<boolean> {
-  const pass = req.headers.get("x-admin-pass") || "";
-  if (!pass) return false;
-  try {
-    const raw = await fs.readFile(path.join(process.cwd(), "src", "data", "admins.json"), "utf-8");
-    const admins = JSON.parse(raw) as { password: string }[];
-    return admins.some((a) => a.password === pass);
-  } catch {
-    return false;
-  }
+const unauthorized = () => NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+// Parse the form payload coming from the admin UI
+function parseBody(body: any) {
+  const toList = (v: any) =>
+    Array.isArray(v)
+      ? v
+      : String(v || "")
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+  return {
+    name: body.name,
+    cat: body.cat,
+    price: body.price,
+    orig: body.orig === "" || body.orig == null ? null : body.orig,
+    img: body.img,
+    fallback: body.fallback || body.img,
+    desc: body.desc,
+    badge: body.badge,
+    variants: toList(body.variants),
+    colors: toList(body.colors),
+    rating: body.rating,
+    reviews: body.reviews,
+  };
 }
 
-// List catalog products (admin only) — with current name/description
+// List all products
 export async function GET(req: Request) {
-  if (!(await isAdmin(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const products = await getCatalog();
-  return NextResponse.json({
-    products: products.map((p) => ({
-      id: p.id,
-      name: p.name,
-      desc: p.desc,
-      cat: p.cat,
-      price: p.price,
-      img: p.img,
-      fallback: p.fallback,
-    })),
-  });
+  if (!(await isAdminRequest(req))) return unauthorized();
+  try {
+    return NextResponse.json({ products: await getCatalog() });
+  } catch (err: any) {
+    console.error("catalog list error:", err);
+    return NextResponse.json({ error: "Could not load catalog.", detail: err?.message }, { status: 500 });
+  }
 }
 
-// Edit a product's name / description (admin only)
-export async function PATCH(req: Request) {
-  if (!(await isAdmin(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const body = await req.json();
-  const { id, name, desc } = body as { id?: number; name?: string; desc?: string };
+// Add a product
+export async function POST(req: Request) {
+  if (!(await isAdminRequest(req))) return unauthorized();
+  try {
+    const body = await req.json();
+    if (!body?.name?.trim()) return NextResponse.json({ error: "Product name is required." }, { status: 400 });
+    if (!body?.cat?.trim()) return NextResponse.json({ error: "Please choose a category." }, { status: 400 });
+    if (!body?.img?.trim()) return NextResponse.json({ error: "Product image URL is required." }, { status: 400 });
 
-  if (id == null || !name || !name.trim()) {
-    return NextResponse.json({ error: "Product id and name are required." }, { status: 400 });
+    const product = await addProduct(parseBody(body));
+    return NextResponse.json({ ok: true, product });
+  } catch (err: any) {
+    console.error("catalog add error:", err);
+    return NextResponse.json({ error: "Could not add the product.", detail: err?.message }, { status: 500 });
   }
-  const ok = await setCatalogOverride(Number(id), name, desc || "");
-  if (!ok) return NextResponse.json({ error: "Product not found." }, { status: 404 });
-  return NextResponse.json({ ok: true });
+}
+
+// Edit a product
+export async function PATCH(req: Request) {
+  if (!(await isAdminRequest(req))) return unauthorized();
+  try {
+    const body = await req.json();
+    if (body?.id == null) return NextResponse.json({ error: "Product id is required." }, { status: 400 });
+
+    const product = await updateProduct(Number(body.id), parseBody(body));
+    if (!product) return NextResponse.json({ error: "Product not found." }, { status: 404 });
+    return NextResponse.json({ ok: true, product });
+  } catch (err: any) {
+    console.error("catalog update error:", err);
+    return NextResponse.json({ error: "Could not save the product.", detail: err?.message }, { status: 500 });
+  }
+}
+
+// Delete a product  →  /api/admin/catalog?id=3
+export async function DELETE(req: Request) {
+  if (!(await isAdminRequest(req))) return unauthorized();
+  try {
+    const id = Number(new URL(req.url).searchParams.get("id"));
+    if (!Number.isFinite(id)) return NextResponse.json({ error: "Product id is required." }, { status: 400 });
+
+    const ok = await deleteProduct(id);
+    if (!ok) return NextResponse.json({ error: "Product not found." }, { status: 404 });
+    return NextResponse.json({ ok: true });
+  } catch (err: any) {
+    console.error("catalog delete error:", err);
+    return NextResponse.json({ error: "Could not delete the product.", detail: err?.message }, { status: 500 });
+  }
 }
