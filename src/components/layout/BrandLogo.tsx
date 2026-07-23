@@ -17,7 +17,7 @@ export default function BrandLogo({ footer = false }: { footer?: boolean }) {
 
   return (
     <img
-      src="/images/shanya1.png"
+      src="/images/shanya1.webp"
       alt="Shanya"
       onError={() => setErrored(true)}
     />

@@ -17,12 +17,12 @@ const IMG = {
 };
 
 export const CATEGORIES: Category[] = [
-  { name: "Hair Claws & Clips", img: "/images/cat-claws.png", href: "/category/hair-claws-and-clips" },
-  { name: "Scrunchies & Bows", img: "/images/cat-scrunchies.png", href: "/category/scrunchies-and-bows" },
-  { name: "Headbands", img: "/images/cat-headbands.png", href: "/category/headbands" },
-  { name: "Hair Extensions", img: "/images/cat-extensions.png", href: "/category/hair-extensions" },
-  { name: "Rubber Bands", img: "/images/cat-rubberbands.png", href: "/category/rubber-bands" },
-  { name: "Combo & Gifts", img: "/images/cat-combo.png", href: "/category/combo-and-gifts" },
+  { name: "Hair Claws & Clips", img: "/images/cat-claws.webp", href: "/category/hair-claws-and-clips" },
+  { name: "Scrunchies & Bows", img: "/images/cat-scrunchies.webp", href: "/category/scrunchies-and-bows" },
+  { name: "Headbands", img: "/images/cat-headbands.webp", href: "/category/headbands" },
+  { name: "Hair Extensions", img: "/images/cat-extensions.webp", href: "/category/hair-extensions" },
+  { name: "Rubber Bands", img: "/images/cat-rubberbands.webp", href: "/category/rubber-bands" },
+  { name: "Combo & Gifts", img: "/images/cat-combo.webp", href: "/category/combo-and-gifts" },
 ];
 
 export const PRODUCTS: Product[] = [
@@ -58,11 +58,11 @@ export const TESTIMONIALS = [
 // ── Helpers / derived ──
 export const HERO_IMAGE = `${U}1522337360788-8b13dee7a37e?w=1400&q=85&fm=webp`;
 export const HERO_SLIDES = [
-  "/images/banner1.png",
-  "/images/banner2.png",
-  "/images/banner3.png",
-  "/images/banner4.png",
-  "/images/banner5.png",
+  "/images/banner1.webp",
+  "/images/banner2.webp",
+  "/images/banner3.webp",
+  "/images/banner4.webp",
+  "/images/banner5.webp",
 ];
 export const WHATSAPP_LINK =
   "https://wa.me/919818701724?text=Hi%20I%20need%20help%20with%20a%20Shanya%20order";
@@ -80,12 +80,7 @@ export const INSTAGRAM_URL = "https://www.instagram.com/shanya.accessories/";
 
 // Instagram feed thumbnails (webp-optimised)
 export const INSTAGRAM_FEED = [
-  `${U}1522337360788-8b13dee7a37e?w=300&q=70&fm=webp`,
-  `${U}1519415943484-9fa1873496d4?w=300&q=70&fm=webp`,
-  `${U}1457972729786-0411a3b2b626?w=300&q=70&fm=webp`,
-  `${U}1595476108010-b4d1f102b1b1?w=300&q=70&fm=webp`,
-  `${U}1503185912284-5271ff81b9a8?w=300&q=70&fm=webp`,
-  `${U}1487412947147-5cebf100ffc2?w=300&q=70&fm=webp`,
+  ,
 ];
 
 export const slugify = (s: string) =>
