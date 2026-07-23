@@ -17,12 +17,12 @@ const IMG = {
 };
 
 export const CATEGORIES: Category[] = [
-  { name: "Hair Claws & Clips", img: IMG.a, href: "/category/hair-claws-and-clips" },
-  { name: "Scrunchies & Bows", img: IMG.c, href: "/category/scrunchies-and-bows" },
-  { name: "Headbands", img: IMG.f, href: "/category/headbands" },
-  { name: "Hair Extensions", img: IMG.e, href: "/category/hair-extensions" },
-  { name: "Rubber Bands", img: IMG.h, href: "/category/rubber-bands" },
-  { name: "Combo & Gifts", img: IMG.d, href: "/category/combo-and-gifts" },
+  { name: "Hair Claws & Clips", img: "/images/cat-claws.png", href: "/category/hair-claws-and-clips" },
+  { name: "Scrunchies & Bows", img: "/images/cat-scrunchies.png", href: "/category/scrunchies-and-bows" },
+  { name: "Headbands", img: "/images/cat-headbands.png", href: "/category/headbands" },
+  { name: "Hair Extensions", img: "/images/cat-extensions.png", href: "/category/hair-extensions" },
+  { name: "Rubber Bands", img: "/images/cat-rubberbands.png", href: "/category/rubber-bands" },
+  { name: "Combo & Gifts", img: "/images/cat-combo.png", href: "/category/combo-and-gifts" },
 ];
 
 export const PRODUCTS: Product[] = [
@@ -58,11 +58,11 @@ export const TESTIMONIALS = [
 // ── Helpers / derived ──
 export const HERO_IMAGE = `${U}1522337360788-8b13dee7a37e?w=1400&q=85&fm=webp`;
 export const HERO_SLIDES = [
-  `${U}1522337360788-8b13dee7a37e?w=1600&q=85&fm=webp`,
-  `${U}1519415943484-9fa1873496d4?w=1600&q=85&fm=webp`,
-  `${U}1457972729786-0411a3b2b626?w=1600&q=85&fm=webp`,
-  `${U}1595476108010-b4d1f102b1b1?w=1600&q=85&fm=webp`,
-  `${U}1503185912284-5271ff81b9a8?w=1600&q=85&fm=webp`,
+  "/images/banner1.png",
+  "/images/banner2.png",
+  "/images/banner3.png",
+  "/images/banner4.png",
+  "/images/banner5.png",
 ];
 export const WHATSAPP_LINK =
   "https://wa.me/919818701724?text=Hi%20I%20need%20help%20with%20a%20Shanya%20order";
