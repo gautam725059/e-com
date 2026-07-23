@@ -76,7 +76,7 @@ export const COD_MIN_ORDER = 1499; // Cash on Delivery only on orders of ₹1499
 
 // Set to false to pause orders (checkout then shows a "We're back soon" message).
 export const ORDERS_ENABLED = true;
-export const INSTAGRAM_URL = "https://www.instagram.com/shanya.in";
+export const INSTAGRAM_URL = "https://www.instagram.com/shanya.accessories/";
 
 // Instagram feed thumbnails (webp-optimised)
 export const INSTAGRAM_FEED = [
