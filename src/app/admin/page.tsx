@@ -24,6 +24,8 @@ import { CATEGORIES } from "@/lib/data";
 
 const ORDER_STATUS_FLOW = ["placed", "confirmed", "shipped", "delivered", "cancelled"];
 
+const MAX_IMAGES = 5;
+
 const BLANK_PRODUCT = {
   id: null as number | null,
   name: "",
@@ -31,6 +33,7 @@ const BLANK_PRODUCT = {
   price: "",
   orig: "",
   img: "",
+  images: [] as string[],
   desc: "",
   badge: "",
   variants: "",
@@ -82,6 +85,7 @@ export default function AdminPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [savingProduct, setSavingProduct] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [imgUrlInput, setImgUrlInput] = useState("");
 
   // Restore session (needs the password too — it authenticates the admin APIs)
   useEffect(() => {
@@ -234,39 +238,79 @@ export default function AdminPage() {
   }
 
   function startAdd() {
-    setEditing({ ...BLANK_PRODUCT, cat: catFilter !== "All" ? catFilter : CATEGORIES[0].name });
+    setEditing({ ...BLANK_PRODUCT, images: [], cat: catFilter !== "All" ? catFilter : CATEGORIES[0].name });
+    setImgUrlInput("");
     setFormOpen(true);
   }
 
   function startEdit(p: any) {
+    setImgUrlInput("");
     setEditing({
       ...p,
       orig: p.orig ?? "",
+      images: p.images?.length ? [...p.images] : p.img ? [p.img] : [],
       variants: (p.variants || []).join(", "),
       colors: (p.colors || []).join(", "),
     });
     setFormOpen(true);
   }
 
+  function addImage(url: string) {
+    const clean = url.trim();
+    if (!clean) return;
+    setEditing((f: any) => {
+      const list = [...(f.images || [])];
+      if (list.includes(clean) || list.length >= MAX_IMAGES) return f;
+      list.push(clean);
+      return { ...f, images: list, img: list[0] };
+    });
+  }
+
+  function removeImage(idx: number) {
+    setEditing((f: any) => {
+      const list = (f.images || []).filter((_: string, i: number) => i !== idx);
+      return { ...f, images: list, img: list[0] || "" };
+    });
+  }
+
+  function makeMainImage(idx: number) {
+    setEditing((f: any) => {
+      const list = [...(f.images || [])];
+      const [pick] = list.splice(idx, 1);
+      list.unshift(pick);
+      return { ...f, images: list, img: list[0] };
+    });
+  }
+
   function setField(k: string, v: any) {
     setEditing((f: any) => ({ ...f, [k]: v }));
   }
 
-  async function handleImageUpload(file: File) {
+  // Upload one or more files and append each to the product gallery.
+  async function handleImageUpload(files: File[]) {
+    const room = MAX_IMAGES - (editing?.images?.length || 0);
+    if (room <= 0) {
+      setMessage(`You can add up to ${MAX_IMAGES} images per product.`);
+      setTimeout(() => setMessage(""), 3000);
+      return;
+    }
+    const batch = files.slice(0, room);
     setUploading(true);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      // NOTE: no Content-Type header — the browser sets the multipart boundary.
-      const r = await fetch("/api/admin/upload", {
-        method: "POST",
-        headers: { "x-admin-pass": adminPass },
-        body: fd,
-      });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.error || "Upload failed");
-      setField("img", d.url);
-      setMessage("Image uploaded ✅");
+      for (const file of batch) {
+        const fd = new FormData();
+        fd.append("file", file);
+        // NOTE: no Content-Type header — the browser sets the multipart boundary.
+        const r = await fetch("/api/admin/upload", {
+          method: "POST",
+          headers: { "x-admin-pass": adminPass },
+          body: fd,
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || "Upload failed");
+        addImage(d.url);
+      }
+      setMessage(batch.length > 1 ? `${batch.length} images uploaded ✅` : "Image uploaded ✅");
       setTimeout(() => setMessage(""), 2500);
     } catch (err: any) {
       setMessage(String(err.message || err));
@@ -278,6 +322,11 @@ export default function AdminPage() {
   async function handleSaveProduct(e: React.FormEvent) {
     e.preventDefault();
     if (!editing) return;
+    if (!(editing.images || []).length) {
+      setMessage("Please add at least one product image.");
+      setTimeout(() => setMessage(""), 3000);
+      return;
+    }
     setSavingProduct(true);
     try {
       const isNew = editing.id == null;
@@ -325,6 +374,8 @@ export default function AdminPage() {
     }
     const inr = (n: number) =>
       "₹" + Number(n || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    // Absolute URL — the print window has no page context of its own.
+    const logoUrl = `${window.location.origin}/images/shanya-logo.webp`;
     const rows = (order.items || [])
       .map(
         (it: any) => `
@@ -345,7 +396,8 @@ export default function AdminPage() {
         body{font-family:'Inter',Arial,sans-serif;color:#1A1A1A;background:#f3ece1;padding:32px}
         .inv{max-width:760px;margin:0 auto;background:#fff;padding:44px 46px;box-shadow:0 10px 40px rgba(0,0,0,.08)}
         .top{display:flex;justify-content:space-between;align-items:flex-start}
-        .brand-name{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;letter-spacing:1px;line-height:1}
+        .brand-logo{height:78px;width:auto;display:block}
+        .brand-name{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;letter-spacing:1px;line-height:1;display:none}
         .brand-ul{display:block;height:3px;width:90px;background:linear-gradient(90deg,#B8963E,transparent);margin-top:4px}
         .brand-sub{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#8a8275;margin-top:8px}
         .banner{display:flex;align-items:center;background:#1A1A1A;color:#fff;padding:14px 26px}
@@ -379,7 +431,9 @@ export default function AdminPage() {
       <div class="inv">
         <div class="top">
           <div>
-            <div class="brand-name">Shanya<span class="brand-ul"></span></div>
+            <img class="brand-logo" src="${logoUrl}" alt="Shanya"
+                 onerror="this.style.display='none';document.getElementById('wordmark').style.display='block'">
+            <div class="brand-name" id="wordmark">Shanya<span class="brand-ul"></span></div>
             <div class="brand-sub">Premium Hair Accessories</div>
           </div>
           <div class="banner"><i></i><i></i><b>INVOICE</b></div>
@@ -457,15 +511,10 @@ export default function AdminPage() {
         <div className="w-full max-w-md bg-[#16223f] border border-[#23355d] p-8 rounded-2xl shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#d4af37]" />
           <div className="flex flex-col items-center mb-8 text-center">
-            <svg className="w-16 h-16 text-[#d4af37] mb-3" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <circle cx="50" cy="50" r="12" strokeWidth="2" />
-              <circle cx="50" cy="32" r="12" /><circle cx="50" cy="68" r="12" />
-              <circle cx="32" cy="50" r="12" /><circle cx="68" cy="50" r="12" />
-              <circle cx="37" cy="37" r="12" /><circle cx="63" cy="63" r="12" />
-              <circle cx="37" cy="63" r="12" /><circle cx="63" cy="37" r="12" />
-            </svg>
-            <h1 className="text-2xl font-black text-white tracking-widest">SHANYA</h1>
-            <p className="text-xs text-[#c5a880] uppercase tracking-widest font-semibold mt-1">Admin Panel</p>
+            <div className="bg-white rounded-2xl p-3 mb-4 shadow-lg">
+              <img src="/images/shanya-logo.webp" alt="Shanya" className="w-24 h-24 object-contain" />
+            </div>
+            <p className="text-xs text-[#c5a880] uppercase tracking-[0.25em] font-semibold">Admin Panel</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
@@ -523,13 +572,9 @@ export default function AdminPage() {
         } lg:translate-x-0 lg:static`}
       >
         <div className="h-20 border-b border-gray-800 flex items-center px-6 gap-3">
-          <svg className="w-8 h-8 text-[#d4af37] flex-shrink-0" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
-            <circle cx="50" cy="50" r="12" strokeWidth="2" />
-            <circle cx="50" cy="32" r="12" /><circle cx="50" cy="68" r="12" />
-            <circle cx="32" cy="50" r="12" /><circle cx="68" cy="50" r="12" />
-            <circle cx="37" cy="37" r="12" /><circle cx="63" cy="63" r="12" />
-            <circle cx="37" cy="63" r="12" /><circle cx="63" cy="37" r="12" />
-          </svg>
+          <div className="bg-white rounded-lg p-1.5 flex-shrink-0">
+            <img src="/images/shanya-icon.webp" alt="Shanya" className="w-7 h-7 object-contain" />
+          </div>
           <div className="flex flex-col">
             <span className="text-lg font-black tracking-wider text-white">SHANYA</span>
             <span className="text-[9px] text-[#c5a880] uppercase tracking-widest font-bold -mt-0.5">Admin Panel</span>
@@ -855,39 +900,84 @@ export default function AdminPage() {
                         onChange={(e) => setField("orig", e.target.value)} placeholder="299 (leave blank if none)" className={inputCls} />
                     </Field>
 
-                    <Field label="Product Image *" full>
-                      <div className="flex flex-wrap items-start gap-3">
-                        {editing.img && (
-                          <div className="w-24 h-24 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 flex-shrink-0">
-                            <img src={editing.img} alt="preview" className="w-full h-full object-cover" />
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-[240px] space-y-2">
-                          <label className={`flex items-center justify-center gap-2 border-2 border-dashed rounded-lg px-4 py-3 cursor-pointer transition text-xs font-bold ${
-                            uploading ? "border-gray-200 text-gray-400" : "border-[#967850]/40 text-[#967850] hover:bg-[#967850]/5"
-                          }`}>
-                            <Upload size={15} />
-                            {uploading ? "Uploading…" : "Upload image from computer"}
-                            <input
-                              type="file"
-                              accept="image/*"
-                              disabled={uploading}
-                              className="hidden"
-                              onChange={(e) => {
-                                const f = e.target.files?.[0];
-                                if (f) handleImageUpload(f);
-                                e.target.value = "";
-                              }}
-                            />
-                          </label>
+                    <Field label={`Product Images * (up to ${MAX_IMAGES})`} full>
+                      <div className="space-y-3">
+                        <div className="flex flex-wrap gap-3">
+                          {(editing.images || []).map((url: string, i: number) => (
+                            <div key={url + i} className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 group">
+                              <img src={url} alt={`image ${i + 1}`} className="w-full h-full object-cover" />
+                              {i === 0 ? (
+                                <span className="absolute bottom-0 inset-x-0 bg-[#967850] text-white text-[9px] font-bold text-center py-0.5">
+                                  MAIN
+                                </span>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => makeMainImage(i)}
+                                  title="Make this the main image"
+                                  className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-[9px] font-bold py-0.5 opacity-0 group-hover:opacity-100 transition"
+                                >
+                                  SET MAIN
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => removeImage(i)}
+                                title="Remove image"
+                                className="absolute top-1 right-1 w-5 h-5 rounded-full bg-white/90 text-red-600 text-xs font-bold flex items-center justify-center shadow hover:bg-red-600 hover:text-white transition"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+
+                          {(editing.images || []).length < MAX_IMAGES && (
+                            <label className={`w-24 h-24 flex flex-col items-center justify-center gap-1 border-2 border-dashed rounded-lg cursor-pointer transition text-[10px] font-bold text-center px-1 ${
+                              uploading ? "border-gray-200 text-gray-400" : "border-[#967850]/40 text-[#967850] hover:bg-[#967850]/5"
+                            }`}>
+                              <Upload size={16} />
+                              {uploading ? "Uploading…" : "Add image"}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                disabled={uploading}
+                                className="hidden"
+                                onChange={(e) => {
+                                  const files = Array.from(e.target.files || []);
+                                  if (files.length) handleImageUpload(files);
+                                  e.target.value = "";
+                                }}
+                              />
+                            </label>
+                          )}
+                        </div>
+
+                        <div className="flex gap-2">
                           <input
-                            required
-                            value={editing.img}
-                            onChange={(e) => setField("img", e.target.value)}
+                            value={imgUrlInput}
+                            onChange={(e) => setImgUrlInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                addImage(imgUrlInput);
+                                setImgUrlInput("");
+                              }
+                            }}
                             placeholder="…or paste an image URL"
                             className={inputCls}
                           />
+                          <button
+                            type="button"
+                            onClick={() => { addImage(imgUrlInput); setImgUrlInput(""); }}
+                            className="px-4 rounded-lg border border-[#967850]/40 text-[#967850] text-xs font-bold hover:bg-[#967850]/5 transition whitespace-nowrap"
+                          >
+                            Add
+                          </button>
                         </div>
+                        <p className="text-[11px] text-gray-400">
+                          First image is the main one shown on product cards. Hover a thumbnail to change the main image or remove it.
+                        </p>
                       </div>
                     </Field>
 

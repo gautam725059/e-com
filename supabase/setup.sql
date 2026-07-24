@@ -15,7 +15,8 @@ create table if not exists public.shanya_catalog (
   cat         text    not null,
   price       integer not null,
   orig        integer,
-  img         text    not null,
+  img         text    not null,               -- main image (product cards)
+  images      jsonb   not null default '[]'::jsonb,  -- full gallery, first = main
   fallback    text,
   description text,                        -- "desc" is a reserved word → description
   badge       text,
@@ -27,6 +28,12 @@ create table if not exists public.shanya_catalog (
 );
 
 create index if not exists shanya_catalog_cat_idx on public.shanya_catalog (cat);
+
+-- If the table already existed, add the multi-image gallery column
+-- and backfill it from the existing single image.
+alter table public.shanya_catalog add column if not exists images jsonb not null default '[]'::jsonb;
+update public.shanya_catalog set images = to_jsonb(array[img])
+  where images = '[]'::jsonb and img is not null;
 
 -- Reads/writes happen server-side with the service-role key (bypasses RLS),
 -- so no public policy is granted on purpose.

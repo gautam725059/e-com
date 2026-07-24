@@ -4,7 +4,8 @@ export interface Product {
   cat: string;
   price: number;
   orig: number | null;
-  img: string;
+  img: string; // main image (shown on cards)
+  images?: string[]; // full gallery shown on the product page
   fallback: string;
   desc: string;
   badge: string;

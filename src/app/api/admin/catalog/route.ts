@@ -16,13 +16,20 @@ function parseBody(body: any) {
           .map((s) => s.trim())
           .filter(Boolean);
 
+  // Gallery: array of image URLs; the first one is the main/card image.
+  const images = (Array.isArray(body.images) ? body.images : [])
+    .map((s: any) => String(s || "").trim())
+    .filter(Boolean);
+  const mainImg = String(body.img || images[0] || "").trim();
+
   return {
     name: body.name,
     cat: body.cat,
     price: body.price,
     orig: body.orig === "" || body.orig == null ? null : body.orig,
-    img: body.img,
-    fallback: body.fallback || body.img,
+    img: mainImg,
+    images: images.length ? images : mainImg ? [mainImg] : [],
+    fallback: body.fallback || mainImg,
     desc: body.desc,
     badge: body.badge,
     variants: toList(body.variants),
@@ -50,7 +57,8 @@ export async function POST(req: Request) {
     const body = await req.json();
     if (!body?.name?.trim()) return NextResponse.json({ error: "Product name is required." }, { status: 400 });
     if (!body?.cat?.trim()) return NextResponse.json({ error: "Please choose a category." }, { status: 400 });
-    if (!body?.img?.trim()) return NextResponse.json({ error: "Product image URL is required." }, { status: 400 });
+    const hasImage = body?.img?.trim() || (Array.isArray(body?.images) && body.images.filter(Boolean).length);
+    if (!hasImage) return NextResponse.json({ error: "At least one product image is required." }, { status: 400 });
 
     const product = await addProduct(parseBody(body));
     return NextResponse.json({ ok: true, product });

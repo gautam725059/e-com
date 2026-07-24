@@ -14,6 +14,11 @@ export default function ProductDetail({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
   const wished = state.wishlist.includes(product.id);
 
+  // Gallery — falls back to the single image for older products
+  const gallery = product.images?.length ? product.images : [product.img];
+  const [active, setActive] = useState(0);
+  const mainSrc = gallery[Math.min(active, gallery.length - 1)];
+
   const pct = product.orig
     ? Math.round((1 - product.price / product.orig) * 100)
     : 0;
@@ -28,8 +33,27 @@ export default function ProductDetail({ product }: { product: Product }) {
   return (
     <div className="pd">
       <div className="pd-gal">
-        <Img className="pd-gal-main" src={product.img} fallback={product.fallback} alt={product.name} />
-        {product.badge && <span className="pd-badge">{product.badge}</span>}
+        <div className="pd-gal-stage">
+          <Img className="pd-gal-main" src={mainSrc} fallback={product.fallback} alt={product.name} />
+          {product.badge && <span className="pd-badge">{product.badge}</span>}
+        </div>
+
+        {gallery.length > 1 && (
+          <div className="pd-thumbs">
+            {gallery.map((src, i) => (
+              <button
+                key={src + i}
+                type="button"
+                className={`pd-thumb${i === active ? " sel" : ""}`}
+                onClick={() => setActive(i)}
+                onMouseEnter={() => setActive(i)}
+                aria-label={`View image ${i + 1} of ${gallery.length}`}
+              >
+                <Img src={src} fallback={product.fallback} alt={`${product.name} — image ${i + 1}`} />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="pd-info">

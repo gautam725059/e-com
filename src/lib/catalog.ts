@@ -17,14 +17,21 @@ const useDb = () => !!process.env.SUPABASE_SERVICE_ROLE_KEY;
 export type ProductInput = Partial<Omit<Product, "id">>;
 
 function normalise(p: any, fallbackId: number): Product {
-  const img = String(p.img || "").trim();
+  // Gallery: keep every image, first one is the main/card image.
+  const gallery = (Array.isArray(p.images) ? p.images : [])
+    .map((s: any) => String(s || "").trim())
+    .filter(Boolean);
+  const img = String(p.img || gallery[0] || "").trim();
+  const images = gallery.length ? gallery : img ? [img] : [];
+
   return {
     id: Number(p.id ?? fallbackId),
     name: String(p.name || "Untitled").trim(),
     cat: String(p.cat || "").trim(),
     price: Math.max(0, Number(p.price) || 0),
     orig: p.orig === null || p.orig === "" || p.orig === undefined ? null : Number(p.orig) || null,
-    img,
+    img: img || images[0] || "",
+    images,
     fallback: String(p.fallback || img || "/images/clow-clips.avif").trim(),
     desc: String(p.desc || "").trim(),
     badge: String(p.badge || "").trim(),
@@ -43,6 +50,7 @@ const toRow = (p: Product) => ({
   price: p.price,
   orig: p.orig,
   img: p.img,
+  images: p.images ?? [],
   fallback: p.fallback,
   description: p.desc,
   badge: p.badge,
