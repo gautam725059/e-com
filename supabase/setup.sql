@@ -70,7 +70,13 @@ create index if not exists shanya_orders_phone_idx on public.shanya_orders (phon
 alter table public.shanya_orders add column if not exists payment_status text not null default 'pending';
 alter table public.shanya_orders add column if not exists payment_id text;
 
+-- Customer data (names, phones, addresses) is served ONLY via the service-role
+-- key server-side, which bypasses RLS. The anon/public role gets no policy at
+-- all, so a leaked anon key cannot read or write orders.
 alter table public.shanya_orders enable row level security;
+
+-- Self-heal: remove the legacy anon-insert policy if a previous script created it.
+drop policy if exists "anon can insert orders" on public.shanya_orders;
 
 
 -- ---------------------------------------------------------------------

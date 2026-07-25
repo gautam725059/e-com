@@ -2,6 +2,6 @@
   {
     "id": 1,
     "username": "admin",
-    "password": "Shanya@2026"
+    "password": "SET_ADMIN_PASSWORD_ENV_VAR_INSTEAD"
   }
 ]

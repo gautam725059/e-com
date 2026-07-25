@@ -26,14 +26,13 @@ create table if not exists public.shanya_orders (
 
 create index if not exists shanya_orders_phone_idx on public.shanya_orders (phone);
 
--- Row Level Security: the storefront (anon key) may CREATE orders, but reading
--- orders is done server-side with the service-role key only (keeps customer
--- data private). No public SELECT policy on purpose.
+-- Row Level Security: ALL order reads and writes happen server-side with the
+-- service-role key (which bypasses RLS). The public/anon role must never read
+-- or write this table — it holds customer names, phones and addresses.
+-- So we enable RLS and grant NO anon policies at all.
 alter table public.shanya_orders enable row level security;
 
+-- Self-heal: an earlier version of this file allowed anon INSERTs. Drop it so a
+-- re-run of this script cannot reopen that hole. The app does not need it — the
+-- checkout API inserts orders with the service-role key.
 drop policy if exists "anon can insert orders" on public.shanya_orders;
-create policy "anon can insert orders"
-  on public.shanya_orders
-  for insert
-  to anon
-  with check (true);
