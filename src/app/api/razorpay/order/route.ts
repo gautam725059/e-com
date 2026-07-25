@@ -9,13 +9,19 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   try {
     if (!razorpayConfigured()) {
+      const id = RAZORPAY_KEY_ID;
       return NextResponse.json(
         {
           error: "Online payment is not configured. Please use Cash on Delivery.",
-          // Diagnostic (safe — booleans only, no secrets): which key is missing on the server
+          // Diagnostic (safe — no secret values leaked): shows what the SERVER sees.
           detail: {
-            keyId: RAZORPAY_KEY_ID ? "present" : "MISSING",
-            keySecret: process.env.RAZORPAY_KEY_SECRET ? "present" : "MISSING",
+            keyId: id ? "present" : "MISSING",
+            keyIdLen: id.length,
+            keyIdPrefix: id ? id.slice(0, 8) : "",
+            keySecret: (process.env.RAZORPAY_KEY_SECRET || "") ? "present" : "MISSING",
+            // Names of every env var that mentions RAZORPAY (names are not secret).
+            // Reveals typos / wrong var name / missing var on Vercel.
+            razorpayVars: Object.keys(process.env).filter((k) => /RAZORPAY/i.test(k)),
           },
         },
         { status: 503 }
