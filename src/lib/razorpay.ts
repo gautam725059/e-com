@@ -2,8 +2,16 @@ import crypto from "crypto";
 import Razorpay from "razorpay";
 
 // Server-only Razorpay helpers. The secret never leaves the server.
-export const RAZORPAY_KEY_ID = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "";
-const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "";
+//
+// key_id is read at RUNTIME, not via `process.env.NEXT_PUBLIC_*` directly.
+// Next.js inlines `process.env.NEXT_PUBLIC_X` at BUILD time, so if the value
+// changes on Vercel without a cache-less rebuild it can stay stuck as "".
+// The client never reads this env — it gets key_id from the /api/razorpay/order
+// response — so a plain server var works and is immune to the build-cache trap.
+const env = process.env;
+export const RAZORPAY_KEY_ID =
+  env.RAZORPAY_KEY_ID || env["NEXT_PUBLIC_RAZORPAY_KEY_ID"] || "";
+const RAZORPAY_KEY_SECRET = env.RAZORPAY_KEY_SECRET || "";
 
 export const razorpayConfigured = () => Boolean(RAZORPAY_KEY_ID && RAZORPAY_KEY_SECRET);
 
