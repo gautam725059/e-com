@@ -10,7 +10,14 @@ export async function POST(req: Request) {
   try {
     if (!razorpayConfigured()) {
       return NextResponse.json(
-        { error: "Online payment is not configured. Please use Cash on Delivery." },
+        {
+          error: "Online payment is not configured. Please use Cash on Delivery.",
+          // Diagnostic (safe — booleans only, no secrets): which key is missing on the server
+          detail: {
+            keyId: RAZORPAY_KEY_ID ? "present" : "MISSING",
+            keySecret: process.env.RAZORPAY_KEY_SECRET ? "present" : "MISSING",
+          },
+        },
         { status: 503 }
       );
     }
