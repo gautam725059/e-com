@@ -22,7 +22,7 @@ export default function ReturnsPolicyPage() {
           <p className="updated">Last updated: July 2026</p>
 
           <p>
-            At <strong>Shanya</strong> (a brand of Tejswi Impex Pvt. Ltd.), your satisfaction
+            At <strong>Shanya</strong> (a brand of DAG Enterprises), your satisfaction
             matters to us. If something isn&apos;t right with your order, we&apos;re here to help
             with an easy return or exchange.
           </p>
@@ -112,7 +112,7 @@ export default function ReturnsPolicyPage() {
             here to make it easy. 💛
           </p>
           <p style={{ color: "var(--black)", marginTop: 24 }}>
-            <strong>Shanya</strong> · Tejswi Impex Pvt. Ltd.
+            <strong>Shanya</strong> · DAG Enterprises
             <br />
             Plot No. 44, Sector 44, Gurgaon, Haryana, India
           </p>

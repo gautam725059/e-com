@@ -22,7 +22,7 @@ export default function ShippingPolicyPage() {
           <p className="updated">Last updated: July 2026</p>
 
           <p>
-            At <strong>Shanya</strong> (a brand of Tejswi Impex Pvt. Ltd.), we want your
+            At <strong>Shanya</strong> (a brand of DAG Enterprises), we want your
             order to reach you quickly, safely and beautifully packed. This policy explains
             how we process, ship and deliver your orders across India.
           </p>
@@ -110,7 +110,7 @@ export default function ShippingPolicyPage() {
             happy to help!
           </p>
           <p style={{ color: "var(--black)", marginTop: 24 }}>
-            <strong>Shanya</strong> · Tejswi Impex Pvt. Ltd.
+            <strong>Shanya</strong> · DAG Enterprises
             <br />
             Plot No. 44, Sector 44, Gurgaon, Haryana, India
           </p>

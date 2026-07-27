@@ -6,7 +6,7 @@ import { SUPPORT_EMAIL } from "@/lib/data";
 export const metadata: Metadata = {
   title: "Privacy Policy — Shanya",
   description:
-    "How Shanya (Tejswi Impex Pvt. Ltd.) collects, uses and protects your personal information.",
+    "How Shanya (DAG Enterprises) collects, uses and protects your personal information.",
 };
 
 export default function PrivacyPolicyPage() {
@@ -22,8 +22,7 @@ export default function PrivacyPolicyPage() {
           <p className="updated">Last updated: July 2026</p>
 
           <p>
-            This Privacy Policy explains how <strong>Shanya</strong>, a brand of Tejswi Impex
-            Pvt. Ltd. (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;), collects, uses and
+            This Privacy Policy explains how <strong>Shanya</strong>, a brand of DAG Enterprises (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;), collects, uses and
             protects your information when you shop with us at shanya.in. By using our website,
             you agree to this policy.
           </p>
@@ -106,7 +105,7 @@ export default function PrivacyPolicyPage() {
             <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
           </p>
           <p style={{ color: "var(--black)", marginTop: 24 }}>
-            <strong>Shanya</strong> · Tejswi Impex Pvt. Ltd.
+            <strong>Shanya</strong> · DAG Enterprises
             <br />
             Plot No. 44, Sector 44, Gurgaon, Haryana, India
           </p>

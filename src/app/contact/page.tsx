@@ -6,7 +6,7 @@ import { SUPPORT_EMAIL, WHATSAPP_LINK } from "@/lib/data";
 export const metadata: Metadata = {
   title: "Contact Us — Shanya",
   description:
-    "Get in touch with Shanya (Tejswi Impex Pvt. Ltd.) — email, WhatsApp and phone support for orders, returns and any questions.",
+    "Get in touch with Shanya (DAG Enterprises) — email, WhatsApp and phone support for orders, returns and any questions.",
 };
 
 // Support phone (same number as WhatsApp support).
@@ -60,7 +60,7 @@ export default function ContactPage() {
 
           <h2>Registered Business</h2>
           <p style={{ color: "var(--black)" }}>
-            <strong>Shanya</strong> · Tejswi Impex Pvt. Ltd.
+            <strong>Shanya</strong> · DAG Enterprises
             <br />
             Plot No. 44, Sector 44, Gurgaon, Haryana, India
           </p>

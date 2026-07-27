@@ -5,7 +5,7 @@ import { SUPPORT_EMAIL, FREE_SHIPPING_ABOVE, COD_MIN_ORDER } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions — Shanya",
-  description: "The terms & conditions governing your use of Shanya (Tejswi Impex Pvt. Ltd.) and shanya.in.",
+  description: "The terms & conditions governing your use of Shanya (DAG Enterprises) and shanya.in.",
 };
 
 export default function TermsPage() {
@@ -21,7 +21,7 @@ export default function TermsPage() {
           <p className="updated">Last updated: July 2026</p>
 
           <p>
-            Welcome to <strong>Shanya</strong>, a brand of Tejswi Impex Pvt. Ltd. By accessing or
+            Welcome to <strong>Shanya</strong>, a brand of DAG Enterprises. By accessing or
             purchasing from shanya.in, you agree to the following terms. Please read them carefully.
           </p>
 
@@ -85,14 +85,14 @@ export default function TermsPage() {
           <h2>6. Intellectual Property</h2>
           <p>
             All content on this site — the &quot;Shanya&quot; name, logo, product images, text and
-            design — is the property of Tejswi Impex Pvt. Ltd. and may not be copied or used
+            design — is the property of DAG Enterprises and may not be copied or used
             without our written permission.
           </p>
 
           <h2>7. Limitation of Liability</h2>
           <p>
             Our products are sold &quot;as is&quot;. To the extent permitted by law, Shanya /
-            Tejswi Impex Pvt. Ltd. is not liable for any indirect or incidental damages arising
+            DAG Enterprises is not liable for any indirect or incidental damages arising
             from the use of our products or website. Our maximum liability is limited to the value
             of the product purchased.
           </p>
@@ -109,7 +109,7 @@ export default function TermsPage() {
             <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
           </p>
           <p style={{ color: "var(--black)", marginTop: 24 }}>
-            <strong>Shanya</strong> · Tejswi Impex Pvt. Ltd.
+            <strong>Shanya</strong> · DAG Enterprises
             <br />
             Plot No. 44, Sector 44, Gurgaon, Haryana, India
           </p>

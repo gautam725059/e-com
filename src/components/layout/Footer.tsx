@@ -88,13 +88,13 @@ export default function Footer() {
             <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="ft-contact"><Phone size={15} /> WhatsApp Support</a>
             <div className="ft-contact" style={{ alignItems: "flex-start" }}>
               <MapPin size={15} style={{ marginTop: 3, flexShrink: 0 }} />
-              <span>Tejswi Impex Pvt. Ltd.,<br />Sector 44, Gurgaon, Haryana, India</span>
+              <span>DAG Enterprises,<br />Sector 44, Gurgaon, Haryana, India</span>
             </div>
           </div>
         </div>
 
         <div className="ft-bot">
-          <div className="ft-copy">© 2026 Shanya · Tejswi Impex Pvt. Ltd. All rights reserved.</div>
+          <div className="ft-copy">© 2026 Shanya · DAG Enterprises. All rights reserved.</div>
           <div className="ft-pols">
             <Link href="/privacy-policy" className="ft-pol">Privacy Policy</Link>
             <Link href="/terms" className="ft-pol">Terms &amp; Conditions</Link>
