@@ -42,3 +42,6 @@ next-env.d.ts
 public/images/_original_backup/
 
 security-check.js
+
+# Local dev order store — contains customer PII, never commit
+src/data/orders.json

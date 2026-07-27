@@ -74,6 +74,7 @@ export default function Footer() {
 
           <div>
             <div className="ft-ct">Customer Support</div>
+            <Link href="/contact" className="ft-lk">Contact Us</Link>
             <Link href="/#faq" className="ft-lk">FAQs</Link>
             <Link href="/shipping-policy" className="ft-lk">Shipping &amp; Delivery</Link>
             <Link href="/returns" className="ft-lk">Returns &amp; Exchange</Link>
@@ -83,6 +84,7 @@ export default function Footer() {
           <div>
             <div className="ft-ct">Get in Touch</div>
             <a href={`mailto:${SUPPORT_EMAIL}`} className="ft-contact"><Mail size={15} /> {SUPPORT_EMAIL}</a>
+            <a href="tel:+919818701724" className="ft-contact"><Phone size={15} /> +91 98187 01724</a>
             <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="ft-contact"><Phone size={15} /> WhatsApp Support</a>
             <div className="ft-contact" style={{ alignItems: "flex-start" }}>
               <MapPin size={15} style={{ marginTop: 3, flexShrink: 0 }} />
