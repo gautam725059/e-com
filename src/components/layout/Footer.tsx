@@ -88,7 +88,7 @@ export default function Footer() {
             <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="ft-contact"><Phone size={15} /> WhatsApp Support</a>
             <div className="ft-contact" style={{ alignItems: "flex-start" }}>
               <MapPin size={15} style={{ marginTop: 3, flexShrink: 0 }} />
-              <span>DAG Enterprises,<br />Sector 44, Gurgaon, Haryana, India</span>
+              <span>DAG Enterprises,<br />Farrukh Nagar - Panchgaon Rd, Fazilpur Badli,<br />Gurugram, Haryana 122506</span>
             </div>
           </div>
         </div>

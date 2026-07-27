@@ -448,7 +448,7 @@ export default function AdminPage() {
           <div>
             <h4>Bill From:</h4>
             <div>Shanya by DAG Enterprises</div>
-            <div class="muted">Plot No. 44, Sector 44,<br>Gurgaon, Haryana, India</div>
+            <div class="muted">Farrukh Nagar - Panchgaon Rd, Fazilpur Badli,<br>Gurugram, Haryana 122506</div>
             <div class="muted">+91 98187 01724</div>
           </div>
           <div>

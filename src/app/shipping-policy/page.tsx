@@ -112,7 +112,7 @@ export default function ShippingPolicyPage() {
           <p style={{ color: "var(--black)", marginTop: 24 }}>
             <strong>Shanya</strong> · DAG Enterprises
             <br />
-            Plot No. 44, Sector 44, Gurgaon, Haryana, India
+            Farrukh Nagar - Panchgaon Rd, Fazilpur Badli, Gurugram, Haryana 122506
           </p>
         </div>
       </main>

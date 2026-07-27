@@ -62,7 +62,7 @@ export default function ContactPage() {
           <p style={{ color: "var(--black)" }}>
             <strong>Shanya</strong> · DAG Enterprises
             <br />
-            Plot No. 44, Sector 44, Gurgaon, Haryana, India
+            Farrukh Nagar - Panchgaon Rd, Fazilpur Badli, Gurugram, Haryana 122506
           </p>
         </div>
       </main>
