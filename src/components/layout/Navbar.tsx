@@ -11,7 +11,6 @@ const LINKS = [
   { label: "Home", href: "/" },
   { label: "Collections", href: "/#TopCategories" },
   { label: "New Arrivals", href: "/products" },
-  { label: "Sale", href: "/products" },
 ];
 
 export default function Navbar() {
@@ -41,7 +40,6 @@ export default function Navbar() {
 
           <Link href="/#TopCategories" className="nl">Collections</Link>
           <Link href="/products" className="nl">New Arrivals</Link>
-          <Link href="/products" className="nl">Sale</Link>
         </div>
 
         <div className="nav-r">
